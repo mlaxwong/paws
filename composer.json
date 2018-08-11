@@ -1,0 +1,29 @@
+{
+    "name": "mlaxwong/paws",
+    "description": "Paws Framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mlax Wong",
+            "email": "mlaxwong@gmail.com"
+        }
+    ],
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "paws\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "^2.0.13"
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.4"
+    }
+}
