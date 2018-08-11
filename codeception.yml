@@ -9,8 +9,6 @@ actor_suffix: Tester
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
-        - PhpBrowser:
-            url: http://localhost:8080
 coverage:
     enabled: true
     remote: false
