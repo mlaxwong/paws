@@ -19,6 +19,11 @@
             "paws\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": { 
+            "paws\\tests\\": "tests/" 
+        }
+    },
     "require": {
         "php": ">=7.1.0",
         "yiisoft/yii2": "^2.0.15"

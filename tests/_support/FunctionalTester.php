@@ -1,5 +1,5 @@
 <?php
-
+namespace paws\tests;
 
 /**
  * Inherited Methods
