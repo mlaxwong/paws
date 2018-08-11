@@ -19,11 +19,31 @@
             "paws\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": { 
+            "paws\\tests\\": "tests/" 
+        }
+    },
     "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "^2.0.13"
+        "php": ">=7.1.0",
+        "yiisoft/yii2": "^2.0.15"
     },
     "require-dev": {
-        "codeception/codeception": "^2.4"
+        "codeception/codeception": "^2.4",
+        "phpstan/phpstan": "^0.10.2"
+    },
+    "scripts": {
+        "test": "@php vendor/bin/codecept run",
+        "stan": "@php vendor/bin/phpstan analyse src tests --level=7 --autoload-file=vendor/yiisoft/yii2/Yii.php",
+        "ci": [
+            "@test",
+            "@stan"
+        ],
+        "win-test": ".\\vendor\\bin\\codecept run",
+        "win-stan": ".\\vendor\\bin\\phpstan analyse src tests --level=7 --autoload-file=vendor/yiisoft/yii2/Yii.php",
+        "win-ci": [
+            "@win-test",
+            "@win-stan"
+        ]
     }
 }

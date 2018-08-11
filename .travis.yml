@@ -1,0 +1,15 @@
+language: php
+php:
+  - '7.1'
+  - '7.2'
+
+env:
+  matrix:
+    - COMPOSER_OPTIONS="--prefer-dist"
+    - COMPOSER_OPTIONS=""
+
+install:
+  - composer install $COMPOSER_OPTIONS
+
+script:
+  - composer ci
