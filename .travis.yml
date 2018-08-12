@@ -5,8 +5,8 @@ php:
 
 env:
   matrix:
-    # - COMPOSER_OPTIONS="--prefer-dist"
-    - COMPOSER_OPTIONS=""
+    - COMPOSER_OPTIONS="--prefer-dist"
+    # - COMPOSER_OPTIONS=""
 
 before_install:
   - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS codeception;'
