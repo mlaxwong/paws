@@ -13,6 +13,7 @@ before_install:
   - sudo mysql_upgrade --force
   - sudo service mysql restart
   - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mkdir migrations
 
 install:
   - composer install $COMPOSER_OPTIONS
