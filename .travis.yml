@@ -9,11 +9,9 @@ env:
     - COMPOSER_OPTIONS=""
 
 before_install:
-  # - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('123456') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
-  # - sudo mysql_upgrade --force
-  # - sudo service mysql restart
-  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS codeception;'
   - mkdir migrations
+  - cp src/config/testenv/.travis.env .env
 
 install:
   - composer install $COMPOSER_OPTIONS

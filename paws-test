@@ -8,7 +8,7 @@ define('PATH_PAWS_SRC', PATH_BASE . DIRECTORY_SEPARATOR . 'src');
 require PATH_VENDOR . DIRECTORY_SEPARATOR . 'autoload.php';
 
 // Load dotenv
-// if (file_exists(PATH_BASE. DIRECTORY_SEPARATOR . '.env'))  (new Dotenv\Dotenv(PATH_BASE))->load();
+if (file_exists(PATH_BASE. DIRECTORY_SEPARATOR . '.env'))  (new Dotenv\Dotenv(PATH_BASE))->load();
 
 // Run appication
 $app = require PATH_BASE . '/bootstrap/test.php';
