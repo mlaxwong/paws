@@ -6,6 +6,14 @@ paths:
     support: tests/_support
     envs: tests/_envs
 actor_suffix: Tester
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
+modules:
+    config:
+        Yii2:
+            configFile: 'src/config/app.test.php'
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
