@@ -8,7 +8,9 @@ class M180812085338_init extends Migration
 {
     public function safeUp()
     {
-
+        $this->createTable('{{%testing}}', [
+            'testing' => $this->string()->notNull(),
+        ]);
     }
 
     public function safeDown()
