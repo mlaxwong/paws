@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+define('PATH_BASE', __DIR__);
+define('PATH_VENDOR', PATH_BASE . DIRECTORY_SEPARATOR . 'vendor');
+define('PATH_PAWS_SRC', PATH_BASE . DIRECTORY_SEPARATOR . 'src');
+
+// Load Composer's autoloader
+require PATH_VENDOR . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Load dotenv
+// if (file_exists(PATH_BASE. DIRECTORY_SEPARATOR . '.env'))  (new Dotenv\Dotenv(PATH_BASE))->load();
+
+// Run appication
+$app = require PATH_BASE . '/bootstrap/console.php';
+$app->setVendorPath(PATH_VENDOR);
+$app->run();
