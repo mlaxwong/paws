@@ -60,7 +60,7 @@ class MigrateController extends BaseMigrateController
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            if ($action->id !== 'create') $this->db = Instance::ensure($this->db, Connection::className());
+            if ($action->id !== 'create') $this->db = Instance::ensure($this->db, Connection::class);
             return true;
         }
 
