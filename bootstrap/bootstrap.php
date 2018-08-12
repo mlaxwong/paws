@@ -27,7 +27,7 @@ if (ENVIRONMENT !== 'prod' && ENVIRONMENT !== 'dev')
 defined('APP_TYPE') or define('APP_TYPE', 'web');
 
 // Validate app type
-if (APP_TYPE !== 'web' && APP_TYPE !== 'console')
+if (APP_TYPE !== 'web' && APP_TYPE !== 'console' && APP_TYPE !== 'test')
 {
     throw new \Exception('APP_TYPE must be "web" or "console".');
 }

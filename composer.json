@@ -30,15 +30,19 @@
     },
     "require-dev": {
         "codeception/codeception": "^2.4",
-        "phpstan/phpstan": "^0.10.2"
+        "phpstan/phpstan": "^0.10.2",
+        "vlucas/phpdotenv": "^2.5"
     },
     "scripts": {
+        
+        "build-test" : "",
         "test": "@php vendor/bin/codecept run",
         "stan": "@php vendor/bin/phpstan analyse src tests --level=7 --autoload-file=vendor/yiisoft/yii2/Yii.php",
         "ci": [
             "@test",
             "@stan"
         ],
+
         "win-test": ".\\vendor\\bin\\codecept run",
         "win-stan": ".\\vendor\\bin\\phpstan analyse src tests --level=7 --autoload-file=vendor/yiisoft/yii2/Yii.php",
         "win-ci": [
