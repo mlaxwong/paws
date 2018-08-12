@@ -3,6 +3,13 @@ namespace paws\db;
 
 class Migration extends \yii\db\Migration
 {
+    public $db = 'db';
+    
+    public function init()
+    {
+        parent::init();
+    }
+
     public function createTable($table, $columns, $options = null)
     {
         if ($options === null) $options = $this->getDefaultTableOptions();

@@ -6,6 +6,8 @@
 /* @var $className string the new migration class name without namespace */
 /* @var $namespace string the new migration class namespace */
 
+$className = $className ?? null;
+
 echo "<?php\n";
 if (!empty($namespace)) {
     echo "\nnamespace {$namespace};\n";

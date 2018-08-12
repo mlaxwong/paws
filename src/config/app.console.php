@@ -1,4 +1,5 @@
 <?php 
+$pathBase = defined('PATH_BASE') ? constant('PATH_BASE') : dirname(__DIR__, 2);
 return [
     'class' => paws\console\Application::class,
     'controllerNamespace' => 'paws\console\controllers',
@@ -9,7 +10,7 @@ return [
             'migrationNamespaces' => [
                 "paws\migrations",
             ],
-            'migrationPath' => PATH_BASE . DIRECTORY_SEPARATOR . 'migrations',
+            'migrationPath' => $pathBase . DIRECTORY_SEPARATOR . 'migrations',
         ],
     ],
 ];
