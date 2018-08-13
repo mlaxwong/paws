@@ -10,11 +10,12 @@ $className = $className ?? null;
 
 echo "<?php\n";
 if (!empty($namespace)) {
-    echo "\nnamespace {$namespace};\n";
+    echo "namespace {$namespace};\n";
 }
 ?>
 
 use paws\db\Migration;
+use paws\helpers\MigrationHelper;
 
 class <?= $className ?> extends Migration
 {
