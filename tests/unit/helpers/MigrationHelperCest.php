@@ -26,9 +26,9 @@ class MigrationHelperCest
     public function testFk(UnitTester $I)
     {
         $tableName = 'table_name';
-        $attribute = 'attribute';
-        $fk = MigrationHelper::fk($tableName, $attribute);
-        $expected = 'fk_' . $tableName . '_' . $attribute;
+        $column = 'column';
+        $fk = MigrationHelper::fk($tableName, $column);
+        $expected = 'fk_' . $tableName . '_' . $column;
         $I->assertEquals($expected, $fk);
     }
 }
