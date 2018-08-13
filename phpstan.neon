@@ -1,5 +1,5 @@
 parameters:
     excludes_analyse:
-        - %rootDir%/../../../tests/_*
+        - %rootDir%/../../../tests/*
         - %rootDir%/../../../src/Paws.php
         - %rootDir%/../../../src/config/app.test.php
