@@ -1,5 +1,5 @@
 <?php
-namespace paws\models;
+namespace paws\records;
 
 use yii\db\ActiveRecord;
 
