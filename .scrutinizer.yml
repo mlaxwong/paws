@@ -9,10 +9,10 @@ build:
             - cp src/config/testenv/.scrutinizer.env .env
         override:
             -
-                command: 'vendor/bin/codecept run unit --coverage --coverage-xml /home/scrutinizer/build/coverage.xml --coverage-html'
+                command: 'vendor/bin/codecept run --coverage --coverage-xml --coverage-html'
                 coverage:
                     file: 'coverage.xml'
-                    format: 'clover'
+                    format: 'php-clover'
 
 filter:
     excluded_paths:
