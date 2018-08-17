@@ -31,7 +31,8 @@
     "require-dev": {
         "codeception/codeception": "^2.4",
         "phpstan/phpstan": "^0.10.2",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "phpunit/php-code-coverage": "^6.0"
     },
     "scripts": {
         
