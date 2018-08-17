@@ -12,7 +12,7 @@ build:
                 command: 'vendor/bin/codecept run unit --coverage --coverage-xml /home/scrutinizer/build/coverage.xml --coverage-html'
                 coverage:
                     file: 'coverage.xml'
-                    format: 'clover'
+                    format: 'php-clover'
 
 filter:
     excluded_paths:
