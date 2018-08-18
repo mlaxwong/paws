@@ -12,8 +12,8 @@ class M180814231808_create_section extends Migration
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
-            'name' => $this->string(64)->notNull(),
-            'handle' => $this->string()->notNull(),
+            'name' => $this->string(256)->notNull(),
+            'handle' => $this->string(256)->notNull(),
         ]);
     }
 
