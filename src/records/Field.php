@@ -3,10 +3,10 @@ namespace paws\records;
 
 use yii\db\ActiveRecord;
 
-class Entry extends ActiveRecord
+class Field extends ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%entry}}';
+        return '{{%field}}';
     }
 }
