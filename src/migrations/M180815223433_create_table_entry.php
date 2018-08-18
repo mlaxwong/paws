@@ -12,8 +12,8 @@ class M180815223433_create_table_entry extends Migration
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
-            'name' => $this->string(256)->noNull(),
-            'handle'=> $this->string(64)->notNUll(),
+            'name' => $this->string(256)->notNull(),
+            'handle' => $this->string(256)->notNull(),
         ]);
     }
 

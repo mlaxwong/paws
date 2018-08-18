@@ -1,7 +1,7 @@
 <?php
-namespace paws\models;
+namespace paws\records;
 
-use yii\base\ActiveRecord;
+use yii\db\ActiveRecord;
 
 class Entry extends ActiveRecord
 {
