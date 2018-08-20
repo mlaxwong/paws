@@ -4,30 +4,21 @@ namespace paws\migrations;
 use paws\db\Migration;
 use paws\helpers\MigrationHelper;
 
-class M180815223433_create_table_entry extends Migration
+class M180815223423_create_table_field extends Migration
 {
-    public $tableName = 'entry';
-
+    public $tableName = 'field';
+    
     public function safeUp()
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
             'name' => $this->string(256)->notNull(),
             'handle' => $this->string(256)->notNull(),
-            'entry_type_id' => $this->integer(11)->unsigned(),
         ]);
-
-        $this->addForeignKey(
-            MigrationHelper::fk($this->tableName, 'entry_type_id'),
-            MigrationHelper::prefix($this->tableName), 'entry_type_id',
-            MigrationHelper::prefix('entry_type'), 'id',
-            'cascade', 'cascade'
-        );
     }
 
     public function safeDown()
     {
-        $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'entry_type_id'), MigrationHelper::prefix($this->tableName));
         $this->dropTable(MigrationHelper::prefix($this->tableName));
     }
 
@@ -40,7 +31,7 @@ class M180815223433_create_table_entry extends Migration
 
     public function down()
     {
-        echo "M180815223433_create_table_entry cannot be reverted.\n";
+        echo "M180815223423_create_table_field cannot be reverted.\n";
 
         return false;
     }
