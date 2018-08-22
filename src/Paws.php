@@ -1,5 +1,5 @@
 <?php 
-class Paws extends Yii
+class Paws extends \yii\BaseYii
 {
 
 }
