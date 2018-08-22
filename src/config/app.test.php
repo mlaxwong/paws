@@ -2,7 +2,7 @@
 $pathBase = defined('PATH_BASE') ? constant('PATH_BASE') : dirname(__DIR__, 2);
 
 return [
-    'class' => yii\console\Application::class,
+    'class' => paws\console\Application::class,
     'controllerNamespace' => 'paws\console\controllers',
     'controllerMap' => [
         'migrate' => [
