@@ -4,26 +4,20 @@ namespace paws\migrations;
 use paws\db\Migration;
 use paws\helpers\MigrationHelper;
 
-class M180820215938_create_table_field_map extends Migration
+class M180822132240_create_table_entry_value extends Migration
 {
-    public $tableName = 'field_map';
+    public $tableName = 'entry_value';
 
     public function safeUp()
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
-            'entry_type_id' => $this->integer(11)->unsigned(),
+            'id' => $this->primaryKey()->unsigned(),
             'field_id' => $this->integer(11)->unsigned(),
+            'value' => $this->text()->defaultValue(null),
         ]);
 
         $this->addForeignKey(
-            MigrationHelper::fk($this->tableName, 'entry_type_id'), 
-            MigrationHelper::prefix($this->tableName), 'entry_type_id',
-            MigrationHelper::prefix('entry_type'), 'id',
-            'cascade', 'cascade'
-        );
-
-        $this->addForeignKey(
-            MigrationHelper::fk($this->tableName, 'field_id'), 
+            MigrationHelper::fk($this->tableName, 'field_id'),
             MigrationHelper::prefix($this->tableName), 'field_id',
             MigrationHelper::prefix('field'), 'id',
             'cascade', 'cascade'
@@ -33,7 +27,6 @@ class M180820215938_create_table_field_map extends Migration
     public function safeDown()
     {
         $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'field_id'), MigrationHelper::prefix($this->tableName));
-        $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'entry_type_id'), MigrationHelper::prefix($this->tableName));
         $this->dropTable(MigrationHelper::prefix($this->tableName));
     }
 
@@ -46,7 +39,7 @@ class M180820215938_create_table_field_map extends Migration
 
     public function down()
     {
-        echo "M180820215938_create_table_field_map cannot be reverted.\n";
+        echo "M180822132240_create_table_entry_value cannot be reverted.\n";
 
         return false;
     }

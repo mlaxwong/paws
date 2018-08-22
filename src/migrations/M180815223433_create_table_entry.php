@@ -12,9 +12,11 @@ class M180815223433_create_table_entry extends Migration
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
+            'entry_type_id' => $this->integer(11)->unsigned(),
             'name' => $this->string(256)->notNull(),
             'handle' => $this->string(256)->notNull(),
-            'entry_type_id' => $this->integer(11)->unsigned(),
+            'created_at' => $this->timestamp()->defaultValue(null),
+            'updated_at' => $this->timestamp()->defaultValue(null),
         ]);
 
         $this->addForeignKey(
