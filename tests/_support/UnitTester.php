@@ -35,9 +35,4 @@ class UnitTester extends \Codeception\Actor
 
         return $method->invokeArgs($object, $parameters);
     }
-
-    public function createTable($table, $columns, $options = null)
-    {
-        
-    }
 }

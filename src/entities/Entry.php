@@ -6,5 +6,5 @@ use paws\records\Entry as EntryRecord;
 
 class Entry extends Entity
 {
-    public $recordClass = EntryRecord::class;
+    
 }
