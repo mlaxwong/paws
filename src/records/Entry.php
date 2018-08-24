@@ -8,7 +8,7 @@ use paws\behaviors\TimestampBehavior;
 
 class Entry extends ActiveRecord
 {
-    public function bahaviors()
+    public function behaviors()
     {
         return [
             TimestampBehavior::class,
@@ -24,7 +24,7 @@ class Entry extends ActiveRecord
     {
         return [
             [['name', 'handle', 'entry_type_id'], 'required'],
-            [['name', 'handle'], 'string' => 256],
+            [['name', 'handle'], 'string', 'max' => 256],
             [['entry_type_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
         ];
@@ -32,11 +32,11 @@ class Entry extends ActiveRecord
 
     public function getEntryType()
     {
-        return $this->hasOne(EntryType::class, ['id' => 'entry_type']);
+        return $this->hasOne(EntryType::class, ['id' => 'entry_type_id']);
     }
 
     public function getEntryValues()
     {
-        return $this->hasMany(EntryValue::class, ['id' => 'entry_value_id'])->viaTable('{{%entry_value_map', ['entry_id' => 'id']);
+        return $this->hasMany(EntryValue::class, ['entry_id' => 'id']);
     }
 }

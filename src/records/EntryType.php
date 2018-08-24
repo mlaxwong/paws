@@ -27,7 +27,7 @@ class EntryType extends ActiveRecord
 
     public function getFields()
     {
-        return $this->hasMany(Field::class, ['id' => 'entry_type_id'])->viaTable('{{%entry_type}}', ['field_id' => 'id']);
+        return $this->hasMany(Field::class, ['id' => 'field_id'])->viaTable('{{%entry_type_field_map}}', ['entry_type_id' => 'id']);
     }
     
 }

@@ -2,12 +2,12 @@
 namespace paws\entities;
 
 use paws\base\Entity;
-use paws\records\Entry as EntryRecord;
+use paws\records\Field as FieldRecord;
 
-class Entry extends Entity
+class Field extends Entity
 {
     public static function recordClass(): string
     {
-        return EntryRecord::class;
+        return FieldRecord::class;
     }
 }

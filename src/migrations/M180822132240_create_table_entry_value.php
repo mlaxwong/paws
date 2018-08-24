@@ -12,9 +12,17 @@ class M180822132240_create_table_entry_value extends Migration
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
+            'entry_id' => $this->integer(11)->unsigned(),
             'field_id' => $this->integer(11)->unsigned(),
             'value' => $this->text()->defaultValue(null),
         ]);
+
+        $this->addForeignKey(
+            MigrationHelper::fk($this->tableName, 'entry_id'),
+            MigrationHelper::prefix($this->tableName), 'entry_id',
+            MigrationHelper::prefix('entry'), 'id',
+            'cascade', 'cascade'
+        );
 
         $this->addForeignKey(
             MigrationHelper::fk($this->tableName, 'field_id'),
@@ -27,6 +35,7 @@ class M180822132240_create_table_entry_value extends Migration
     public function safeDown()
     {
         $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'field_id'), MigrationHelper::prefix($this->tableName));
+        $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'entry_id'), MigrationHelper::prefix($this->tableName));
         $this->dropTable(MigrationHelper::prefix($this->tableName));
     }
 

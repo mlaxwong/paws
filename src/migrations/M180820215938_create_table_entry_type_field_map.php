@@ -4,9 +4,9 @@ namespace paws\migrations;
 use paws\db\Migration;
 use paws\helpers\MigrationHelper;
 
-class M180820215938_create_table_field_map extends Migration
+class M180820215938_create_table_entry_type_field_map extends Migration
 {
-    public $tableName = 'field_map';
+    public $tableName = 'entry_type_field_map';
 
     public function safeUp()
     {

@@ -3,6 +3,7 @@ namespace paws\records;
 
 use yii\db\ActiveRecord;
 use paws\records\Field;
+use paws\records\Entry;
 
 class EntryValue extends ActiveRecord
 {
@@ -14,10 +15,15 @@ class EntryValue extends ActiveRecord
     public function rules()
     {
         return [
-            [['field_id', 'value'], 'required'],
-            [['field_id'], 'integer'],
+            [['entry_id', 'field_id', 'value'], 'required'],
+            [['id', 'entry_id', 'field_id'], 'integer'],
             [['value'], 'safe'],
         ];
+    }
+
+    public function getEntry()
+    {
+        return $this->hasOne(Entry::class, ['id' => 'entry_id']);
     }
 
     public function getField()

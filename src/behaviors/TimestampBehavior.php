@@ -5,7 +5,7 @@ use yii\db\Expression;
 
 class TimestampBehavior extends \yii\behaviors\TimestampBehavior
 {
-    protected function getValue($event): string
+    protected function getValue($event)
     {
         if ($this->value === null) {
             return new Expression('NOW()');
