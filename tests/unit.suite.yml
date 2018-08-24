@@ -7,3 +7,7 @@ modules:
     enabled:
         - Asserts
         - \paws\tests\Helper\Unit
+        - Yii2
+    config:
+        Yii2:
+            configFile: 'src/config/codeception.php'
