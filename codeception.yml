@@ -22,3 +22,11 @@ coverage:
     remote: false
     include:
         - src/*
+    exclude:
+        - src/config/*
+        - src/migrations/*
+        - src/*/controllers/*
+        - src/*/views/*
+        - src/db/Migration.php
+        - src/Paws.php
+        - src/Yii.php
