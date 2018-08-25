@@ -35,4 +35,12 @@ class UnitTester extends \Codeception\Actor
 
         return $method->invokeArgs($object, $parameters);
     }
+
+    public function invokeProperty(&$object, $propertyName)
+    {
+        $reflection = new ReflectionClass(get_class($object));
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
+        return $property->getValue($object);
+    }
 }
