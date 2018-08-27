@@ -62,8 +62,14 @@ require PATH_PAWS_SRC . DIRECTORY_SEPARATOR . 'Paws.php';
 Paws::setAlias('@paws', PATH_PAWS_SRC);
 Paws::setAlias('@runtime', PATH_BASE . DIRECTORY_SEPARATOR . 'runtime');
 
+// Project config
+$projectConfigPath = PATH_BASE . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'config';
+$projectConfigs = glob($projectConfigPath . DIRECTORY_SEPARATOR . 'app.*.' . APP_TYPE . '.php');
+if (file_exists($projectConfigPath . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php')) array_unshift($projectConfigs, $projectConfigPath . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php');
+if (file_exists($projectConfigPath . DIRECTORY_SEPARATOR . 'app.php')) array_unshift($projectConfigs, $projectConfigPath . DIRECTORY_SEPARATOR . 'app.php');
+
 // Application config
-$config->appConfigs = [
+$config->appConfigs = \yii\helpers\ArrayHelper::merge([
     ['components' => ['config' => $config]],
     [
         'vendorPath' => PATH_VENDOR,
@@ -71,9 +77,7 @@ $config->appConfigs = [
     ], 
     PATH_PAWS_SRC . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'app.php',
     PATH_PAWS_SRC . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php',
-    PATH_BASE . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'app.php',
-    PATH_BASE . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php',
-];
+], $projectConfigs);
 
 // Build application
 return Paws::createObject($config->app);
