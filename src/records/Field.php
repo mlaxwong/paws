@@ -17,7 +17,7 @@ class Field extends ActiveRecord
             [['name', 'handle'], 'required'],
             [['name', 'handle'], 'string', 'max' => 256],
             [['config'], 'safe'],
-        ];
+        ];  
     }
 
     public function getEntryTypes()

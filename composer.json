@@ -26,7 +26,8 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "yiisoft/yii2": "^2.0.15"
+        "yiisoft/yii2": "^2.0.15",
+        "voskobovich/yii2-linker-behavior": "^4.1"
     },
     "require-dev": {
         "codeception/codeception": "^2.4",
