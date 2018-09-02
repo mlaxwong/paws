@@ -23,8 +23,7 @@ class Entry extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'handle', 'entry_type_id'], 'required'],
-            [['name', 'handle'], 'string', 'max' => 256],
+            [['entry_type_id'], 'required'],
             [['entry_type_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
         ];

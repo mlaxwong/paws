@@ -74,11 +74,6 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
      * 
      */
 
-    public static function instantiate($row)
-    {
-        return new static(['entry_type_id' => $row['entry_type_id']]);
-    }
-
     public function attributes()
     {
         return ArrayHelper::merge(['id', 'entry_type_id'], ArrayHelper::getColumn($this->getEntryType()->fields, 'handle'));
@@ -143,16 +138,16 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
             }
         }
 
-        $entryRecord = new EntryRecord($baseValues);
-        $entryRecord->entry_type_id = $this->entry_type_id;
-        if (!$entryRecord->save(false)) return false;
-        $primaryKeys = $entryRecord::primaryKey();
-        foreach ($primaryKeys as $primaryKey)
-        {
-            $id = $entryRecord->{$primaryKey};
-            $this->setAttribute($primaryKey, $id);
-            $dirtyAttribute[$primaryKey] = $id;
+        if (($primaryKeys = static::getDb()->schema->insert(static::tableName(), $baseValues)) === false) {
+            return false;
         }
+        foreach ($primaryKeys as $name => $value) 
+        {
+            $id = EntryRecord::getTableSchema()->columns[$name]->phpTypecast($value);
+            $this->setAttribute($name, $id);
+            $dirtyAttribute[$name] = $id;
+        }
+
         foreach ($values as $key => $value)
         {
             $field = Field::find()->andWhere(['handle' => $key])->one();
