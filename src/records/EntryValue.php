@@ -30,4 +30,12 @@ class EntryValue extends ActiveRecord
     {
         return $this->hasOne(Field::class, ['id' => 'field_id']);
     }
+
+    public static function updateAll($attributes, $condition = '', $params = [])
+    {
+        $command = static::getDb()->createCommand();
+        $command->update(static::tableName(), $attributes, $condition, $params);
+
+        return $command->execute();
+    }
 }

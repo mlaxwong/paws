@@ -25,8 +25,8 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
     const OP_ALL = 0x07;
 
     public $entry_type_id;
-
-    public $id;
+    
+    private $_oldAttributes;
 
     // public function __construct($type, $config = [])
     // {
@@ -129,7 +129,6 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
         if (!$this->beforeSave(true)) return false;
 
         $baseAttribute = ['entry_type_id'];
-        
         $dirtyAttribute = $this->getDirtyAttributes($attributes);
         
         $baseValues = [];
@@ -169,6 +168,70 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
         $this->afterSave(true, $changedAttributes);
 
         return true;
+    }
+
+    protected function updateInternal($attributes = null)
+    {
+        if (!$this->beforeSave(false)) {
+            return false;
+        }
+        $values = $this->getDirtyAttributes($attributes);
+        if (empty($values)) {
+            $this->afterSave(false, $values);
+            return 0;
+        }
+        $condition = $this->getOldPrimaryKey(true);
+        $lock = $this->optimisticLock();
+        if ($lock !== null) {
+            $values[$lock] = $this->$lock + 1;
+            $condition[$lock] = $this->$lock;
+        }
+
+        $id = $condition[EntryRecord::primaryKey()[0]];
+
+        $baseAttribute = ['entry_type_id'];
+        $baseValues = [];
+        $fieldValues = $values;
+        foreach ($values as $key => $value)
+        {
+            if (in_array($key, $baseAttribute))
+            {
+                $baseValues[$key] = $value;
+                unset($fieldValues[$key]);
+            }
+        }
+
+        if (!isset($baseAttribute['entry_type_id'])) $baseValues['entry_type_id'] = $this->getEntryType()->id;
+        
+        // We do not check the return value of updateAll() because it's possible
+        // that the UPDATE statement doesn't change anything and thus returns 0.
+        $rows = EntryRecord::updateAll($baseValues, $condition);
+
+        if ($lock !== null && !$rows) {
+            throw new StaleObjectException('The object being updated is outdated.');
+        }
+        
+        foreach ($fieldValues as $key => $value)
+        {
+            $field = Field::find()->andWhere(['handle' => $key])->one();
+            $entryValue = EntryValue::find()->andWhere(['field_id' => $field->id, 'entry_id' => $id])->one();
+            $fieldConditions['id'] = $entryValue->id;
+            $fieldConditions['entry_id'] = $id;
+            $fieldRows = EntryValue::updateAll(['value' => $value], $fieldConditions);
+        }
+
+        if (isset($values[$lock])) {
+            $this->$lock = $values[$lock];
+        }
+
+        $changedAttributes = [];
+        foreach ($values as $name => $value) {
+            $changedAttributes[$name] = isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
+            $this->_oldAttributes[$name] = $value;
+        }
+        $this->afterSave(false, $changedAttributes);
+
+        return $rows;
     }
 
     public function transactions()
