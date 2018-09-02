@@ -28,17 +28,6 @@ class Entry extends BaseActiveRecord implements ActiveRecordInterface
     
     private $_oldAttributes;
 
-    // public function __construct($type, $config = [])
-    // {
-    //     if ($type instanceof EntryType) {
-    //         $this->getEntryType() = $type;
-    //     } else if (is_integer($type)) {
-    //         $this->getEntryType() = EntryType::findOne($type);
-    //     }
-    //     if (!$this->getEntryType()) new InvalidConfigException(Paws::t('app', 'Invalid entry type'));
-    //     parent::__construct($config);
-    // }
-
     public static function tableName()
     {
         return EntryRecord::tableName();
