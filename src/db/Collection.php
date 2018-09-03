@@ -62,10 +62,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
 
     public static function find() {}
 
-    public function insert($runValidation = true, $attributes = null) 
-    {
-
-    }
+    public function insert($runValidation = true, $attributes = null) {}
 
     public static function getDb() 
     {

@@ -5,6 +5,7 @@ use yii\db\ActiveRecordInterface;
 use yii\db\ActiveRecord;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
+use yii\helpers\ArrayHelper;
 use Paws;
 use paws\tests\UnitTester;
 use paws\db\Collection;
@@ -132,8 +133,17 @@ class CollectionCest
 
     public function testGetBaseAttribute(UnitTester $I)
     {
+        // default
         $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
         $I->assertEquals((new Entry)->attributes(), $testClass->getBaseAttributes());
+
+        // custom
+        $testClass = new class extends Collection 
+        { 
+            public static function collectionRecord() { return Entry::class; } 
+            public function getBaseAttributes() { return ['testing1', 'testing2']; } 
+        };
+        $I->assertEquals(['testing1', 'testing2'], $testClass->getBaseAttributes());
     }
 
     public function testGetCustomAttributes(UnitTester $I)
@@ -157,10 +167,40 @@ class CollectionCest
             ]);
         }
         $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $I->assertNull($testClass->getType());
         $I->assertEquals([], $testClass->getCustomAttributes());
 
         $testClass->typeId = 1;
+        $I->assertNotNull($testClass->getType());
         $I->assertEquals($customAttributes, $testClass->getCustomAttributes());
+    }
+
+    public function testAttributes(UnitTester $I)
+    {
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $customAttributes = ['title', 'content'];
+        $I->haveRecord(EntryType::class, [
+            'id' => 1,
+            'name' => 'Article',
+        ]);
+        foreach ($customAttributes as $index => $customAttribute)
+        {
+            $I->haveRecord(Field::class, [
+                'id' => $index + 1,
+                'name' => $customAttribute,
+                'handle' => $customAttribute,
+            ]);
+            $I->haveRecord(get_class($mappingTable), [
+                'entry_type_id' => 1,
+                'field_id' => $index + 1,
+            ]);
+        }
+
+        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $I->assertEquals($testClass->getBaseAttributes(), $testClass->attributes());
+
+        $testClass->typeId = 1;
+        $I->assertEquals(ArrayHelper::merge($testClass->getBaseAttributes(), $customAttributes), $testClass->attributes());
     }
 
     public function testGetType(UnitTester $I)
