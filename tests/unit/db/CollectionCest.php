@@ -2,6 +2,7 @@
 namespace paws\tests\db;
 
 use yii\db\ActiveRecordInterface;
+use yii\db\ActiveRecord;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use Paws;
@@ -9,6 +10,7 @@ use paws\tests\UnitTester;
 use paws\db\Collection;
 use paws\db\RecordInterface;
 use paws\db\CollectionInterface;
+use paws\records\Field;
 use paws\records\Entry;
 use paws\records\EntryType;
 
@@ -128,6 +130,39 @@ class CollectionCest
         $I->assertEquals(Inflector::camel2id(StringHelper::basename(get_class($testClass)), '_') . '_type_id', $testClass::typeAttribute());
     }
 
+    public function testGetBaseAttribute(UnitTester $I)
+    {
+        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $I->assertEquals((new Entry)->attributes(), $testClass->getBaseAttributes());
+    }
+
+    public function testGetCustomAttributes(UnitTester $I)
+    {
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $customAttributes = ['title', 'content'];
+        $I->haveRecord(EntryType::class, [
+            'id' => 1,
+            'name' => 'Article',
+        ]);
+        foreach ($customAttributes as $index => $customAttribute)
+        {
+            $I->haveRecord(Field::class, [
+                'id' => $index + 1,
+                'name' => $customAttribute,
+                'handle' => $customAttribute,
+            ]);
+            $I->haveRecord(get_class($mappingTable), [
+                'entry_type_id' => 1,
+                'field_id' => $index + 1,
+            ]);
+        }
+        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $I->assertEquals([], $testClass->getCustomAttributes());
+
+        $testClass->typeId = 1;
+        $I->assertEquals($customAttributes, $testClass->getCustomAttributes());
+    }
+
     public function testGetType(UnitTester $I)
     {
         $I->haveRecord(EntryType::class, [
@@ -139,9 +174,7 @@ class CollectionCest
             public $typeId = 1;
             public static function collectionRecord()  { return Entry::class; } 
         };
-        $I->assertNull($I->invokeProperty($testClass, '_type'));
         $I->assertEquals(EntryType::findOne(1), $testClass->getType());
-        $I->assertNotNull($I->invokeProperty($testClass, '_type'));
     }
 
     public function testPrimaryKey(UnitTester $I)

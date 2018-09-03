@@ -4,13 +4,12 @@ namespace paws\db;
 use yii\db\BaseActiveRecord;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
+use yii\helpers\ArrayHelper;
 use paws\db\CollectionInterface;
 
 class Collection extends BaseActiveRecord implements CollectionInterface
 {
     public $typeId;
-
-    protected $_type;
 
     public static function collectionRecord() 
     {
@@ -32,14 +31,27 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         return Inflector::camel2id(StringHelper::basename(get_called_class()), '_') . '_type_id';
     }
 
+    public function attributes()
+    {
+        return ArrayHelper::merge($this->getBaseAttributes(), $this->getCustomAttributes());
+    }
+
+    public function getBaseAttributes()
+    {
+        $recordClass = $this->collectionRecord();
+        return array_keys($recordClass::getTableSchema()->columns);
+    }
+
+    public function getCustomAttributes()
+    {
+        $type = $this->getType();
+        return  $type ? ArrayHelper::getColumn($type->fields, 'handle') : [];
+    }
+
     public function getType()
     {
-        if ($this->_type === null)
-        {
-            $typeClass = static::collectionTypeRecord();
-            $this->_type = $typeClass::findOne($this->typeId);
-        }
-        return $this->_type;
+        $typeClass = static::collectionTypeRecord();
+        return $typeClass::findOne($this->typeId);
     }
 
     public static function primaryKey()
