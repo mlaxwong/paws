@@ -48,6 +48,38 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         return  $type ? ArrayHelper::getColumn($type->fields, 'handle') : [];
     }
 
+    public function baseRules()
+    {
+        $recordClass = $this->collectionRecord();
+        return $recordClass::rules();
+    }
+
+    public function customRules()
+    {
+        $rules = [];
+        $type = $this->getType();
+        if ($type) {
+            foreach ($type->fields as $field)
+            {
+                $config = json_decode($field->config, true);
+                if (json_last_error() == JSON_ERROR_NONE)
+                {
+                    foreach ($config as $rule)
+                    {
+                        array_unshift($rule, $field->handle);
+                        $rules[] = $rule;
+                    }
+                }
+            }
+        }
+        return $rules;
+    }
+
+    public function rules()
+    {
+        return ArrayHelper::merge($this->baseRules(), $this->customRules());
+    }
+
     public function getType()
     {
         $typeClass = static::collectionTypeRecord();

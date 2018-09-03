@@ -217,6 +217,62 @@ class CollectionCest
         $I->assertEquals(EntryType::findOne(1), $testClass->getType());
     }
 
+    public function testBaseRules(UnitTester $I)
+    {
+        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $I->assertEquals((new Entry)->rules(), $testClass->baseRules());
+    }
+
+    public function testRules(UnitTester $I)
+    {
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $customAttributes = [
+            [
+                'name' => 'title',
+                'config' => [
+                    ['string', 'max' => 100]
+                ],
+            ],
+            [
+                'name' => 'content',
+                'config' => [
+                    ['safe']
+                ],
+            ],
+        ];
+        $I->haveRecord(EntryType::class, [
+            'id' => 1,
+            'name' => 'Article',
+        ]);
+        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $rules = [];
+        foreach ($customAttributes as $index => $customAttribute)
+        {
+            $I->haveRecord(Field::class, [
+                'id' => $index + 1,
+                'name' => $customAttribute['name'],
+                'handle' => $customAttribute['name'],
+                'config' => json_encode($customAttribute['config']),
+            ]);
+            $I->haveRecord(get_class($mappingTable), [
+                'entry_type_id' => 1,
+                'field_id' => $index + 1,
+            ]);
+
+            $config = $customAttribute['config'];
+            foreach ($config as $rule)
+            {
+                array_unshift($rule, $customAttribute['name']);
+                $rules[] = $rule;
+            }
+        }
+        $I->assertEquals($testClass->baseRules(), $testClass->rules());
+
+        $testClass->typeId = 1;
+        $I->assertEquals($rules, $testClass->customRules());
+        $I->assertEquals(ArrayHelper::merge($testClass->baseRules(), $rules), $testClass->rules());
+    }
+
     public function testPrimaryKey(UnitTester $I)
     {
         $testClass = new class extends Collection
