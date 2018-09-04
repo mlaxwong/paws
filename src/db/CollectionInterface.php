@@ -10,6 +10,8 @@ interface CollectionInterface extends RecordInterface
     public static function collectionTypeRecord();
 
     public static function collectionValueRecord();
+    
+    public static function collectionFieldRecord();
 
     public static function typeAttribute();
 }
