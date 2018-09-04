@@ -51,8 +51,6 @@ class EntryTypeCest
         for ($i = 0; $i < 3; $i++)
         {
             $data = [
-                'name' => 'name' . uniqid(),
-                'handle' => 'handle' . uniqid(),
                 'entry_type_id' => $entryType->id,
             ];
             $entry = new Entry($data);

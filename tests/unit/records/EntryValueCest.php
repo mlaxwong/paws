@@ -54,8 +54,6 @@ class EntryValueCest
         $I->assertTrue($entryType->save());
 
         $entry = new Entry([
-            'name' => 'name' . uniqid(),
-            'handle' => 'handle' . uniqid(),
             'entry_type_id' => $entryType->id,
         ]);
         $I->assertTrue($entry->save());

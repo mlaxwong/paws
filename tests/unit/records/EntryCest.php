@@ -24,9 +24,7 @@ class EntryCest
         $model = new Entry;
         $I->assertEquals([
             'id',
-            'entry_type_id',
-            'name',
-            'handle',
+            'entry_type_id',    
             'created_at',
             'updated_at',
         ], $model->attributes());
@@ -38,8 +36,6 @@ class EntryCest
         $I->assertFalse($model->load([]));
         $data = [
             'Entry' => [
-                'name' => 'name' . uniqid(),
-                'handle' => 'handle' . uniqid(),
                 'entry_type_id' => uniqid(),
             ],
         ];
@@ -57,8 +53,6 @@ class EntryCest
         $I->assertTrue($entryType->save());
 
         $data = [
-            'name' => 'name' . uniqid(),
-            'handle' => 'handle' . uniqid(),
             'entry_type_id' => $entryType->id,
         ];
         $entry = new Entry($data);
