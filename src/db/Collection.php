@@ -241,7 +241,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             $this->_oldAttributes[$name] = $value;
         }
         $this->afterSave(false, $changedAttributes);
-        return $rows >= $updatedFieldrows ? $row : $updatedFieldrows;
+        return $rows >= $updatedFieldrows ? $rows : $updatedFieldrows;
     }
 
     public static function getDb() 
