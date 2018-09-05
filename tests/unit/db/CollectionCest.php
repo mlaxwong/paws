@@ -444,11 +444,12 @@ class CollectionCest
             ]);
         }
         $collection = $testClass::findOne(1);
-        // print_r($collection->attributes);die;
-        // $collection->title = 'Yeah';
-        // $collection->content = 'Sold out';
-        // $collection->save();
+        $I->assertEquals('Breaking news', $collection->title);
+        $I->assertEquals('Mlaxology just listing on stock market', $collection->content);
         $I->assertGreaterThan(0, $collection->updateInternal());
+        $collection = $testClass::findOne(1);
+        $I->assertEquals('Yeah', $collection->title);
+        $I->assertEquals('Sold out', $collection->content);
     }
 
     public function testFind(UnitTester $I)
