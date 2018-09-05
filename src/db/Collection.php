@@ -161,7 +161,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         {
             $fieldClass = static::collectionFieldRecord();
             $fieldRecord = $fieldClass::find()->andWhere(['handle' => $key])->one();
-            if (!$valueId = $this->insertValueRecord($collectionRecord, $fieldRecord, $value, $runValidation)) return false;
+            if (!$this->insertValueRecord($collectionRecord, $fieldRecord, $value)) return false;
         }
         $changedAttributes = array_fill_keys(array_keys($dirtyAttribute), null);
         $this->setOldAttributes($dirtyAttribute);
@@ -170,7 +170,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         return true;
     }
 
-    public function insertValueRecord($collection, $field, $value, $runValidation = true)
+    public function insertValueRecord($collection, $field, $value = true)
     {
         $valueClass = static::collectionValueRecord();
         $valueRecord = new $valueClass([
@@ -178,7 +178,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             static::fkFieldId()         => $field->id,
             'value'                     => $value,
         ]);
-        return $valueRecord->save() ? $valueRecord->id : false;
+        return $valueRecord->save(false) ? $valueRecord->id : false;
     }
 
     public function updateInternal($attributes = null)
@@ -187,13 +187,15 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             return false;
         }
         $values = $this->getDirtyAttributes($attributes);
-        if (empty($values)) {
+        if (empty($values)) 
+        {
             $this->afterSave(false, $values);
             return 0;
         }
         $condition = $this->getOldPrimaryKey(true);
         $lock = $this->optimisticLock();
-        if ($lock !== null) {
+        if ($lock) 
+        {
             $values[$lock] = $this->$lock + 1;
             $condition[$lock] = $this->$lock;
         }
@@ -222,6 +224,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         $fieldClass = static::collectionFieldRecord();
         $valueClass = static::collectionValueRecord();
         $updatedFieldrows = 0;
+        $fieldConditions = [];
         foreach ($fieldValues as $key => $value)
         {
             $fieldRecord = $fieldClass::find()->andWhere(['handle' => $key])->one();
