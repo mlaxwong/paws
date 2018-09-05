@@ -335,8 +335,8 @@ class CollectionCest
     {
         $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
         $values = [
-            'title' => 'Breaking new',
-            'content' => 'Mlaxology just listing on market',
+            'title' => 'Breaking news',
+            'content' => 'Mlaxology just listing on stock market',
         ];
         $I->haveRecord(EntryType::class, [
             'id' => 1,
@@ -363,8 +363,8 @@ class CollectionCest
             public function getDirtyAttributes($name = null)
             {
                 return [
-                    'title' => 'Breaking new',
-                    'content' => 'Mlaxology just listing on market',
+                    'title' => 'Breaking news',
+                    'content' => 'Mlaxology just listing on stock market',
                 ];
             }
         };
@@ -384,8 +384,8 @@ class CollectionCest
     // {
     //     $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
     //     $values = [
-    //         'title' => 'Breaking new',
-    //         'content' => 'Mlaxology just listing on market',
+    //         'title' => 'Breaking news',
+    //         'content' => 'Mlaxology just listing on stock market',
     //     ];
     //     $I->haveRecord(EntryType::class, [
     //         'id' => 1,
@@ -412,8 +412,8 @@ class CollectionCest
     //         public function getDirtyAttributes($name = null)
     //         {
     //             return [
-    //                 'title' => 'Breaking new',
-    //                 'content' => 'Mlaxology just listing on market',
+    //                 'title' => 'Breaking news',
+    //                 'content' => 'Mlaxology just listing on stock market',
     //             ];
     //         }
     //     };
@@ -422,33 +422,56 @@ class CollectionCest
 
     public function testFind(UnitTester $I)
     {
+        $testClass = new class extends Collection 
+        {
+            public static function collectionRecord() { return Entry::class; }
+            public static function collectionFieldRecord() { return Field::class; }
+            public static function typeAttribute() { return 'entry_type_id'; }
+        };
         $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
-        $customAttributes = ['title', 'content'];
+        $fields = [
+            [
+                'name' => 'title',
+                'config' => [
+                    ['string', 'max' => 100]
+                ],
+                'value' => 'Breaking news',
+            ],
+            [
+                'name' => 'content',
+                'config' => [
+                    ['safe']
+                ],
+                'value' => 'Mlaxology just listing on stock market',
+            ],
+        ];
         $I->haveRecord(EntryType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
-        foreach ($customAttributes as $index => $customAttribute)
+        $I->haveRecord(Entry::class, [
+            'id' => 1,
+            'entry_type_id' => 1,
+        ]);
+        foreach ($fields as $index => $field)
         {
             $I->haveRecord(Field::class, [
                 'id' => $index + 1,
-                'name' => $customAttribute,
-                'handle' => $customAttribute,
+                'name' => $field['name'],
+                'handle' => $field['name'],
+                'config' => json_encode($field['config']),
             ]);
             $I->haveRecord(get_class($mappingTable), [
                 'entry_type_id' => 1,
                 'field_id' => $index + 1,
             ]);
+            $I->haveRecord(EntryValue::class, [
+                EntryValue::primaryKey()[0] => $index + 1,
+                $testClass::fkCollectionId() => 1,
+                $testClass::fkFieldId() => $index + 1,
+                'value' => $field['value'],
+            ]);
         }
-        $I->haveRecord(Entry::class, [
-            'id' => 1,
-            'entry_type_id' => 1,
-        ]);
-        $testClass = new class extends Collection 
-        {
-            public static function collectionRecord() { return Entry::class; }
-            public static function typeAttribute() { return 'entry_type_id'; }
-        };
         $collections = $testClass::find()->all();
 
         foreach ($collections as $collection)
