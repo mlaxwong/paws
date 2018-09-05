@@ -15,7 +15,7 @@ class EntryValue extends ActiveRecord
     public function rules()
     {
         return [
-            [['entry_id', 'field_id', 'value'], 'required'],
+            [['entry_id', 'field_id'], 'required'],
             [['id', 'entry_id', 'field_id'], 'integer'],
             [['value'], 'safe'],
         ];

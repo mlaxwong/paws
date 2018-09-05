@@ -17,6 +17,8 @@ class Collection extends BaseActiveRecord implements CollectionInterface
     const OP_ALL    = 0x07;
 
     public $typeId;
+    
+    private $_oldAttributes;
 
     public static function instantiate($row)
     {
@@ -199,17 +201,19 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         $collectionClass = static::collectionRecord();
         $id = $condition[$collectionClass::primaryKey()[0]];
 
-        $baseAttribute = $this->getBaseAttributes();
+        $baseAttributes = $this->getBaseAttributes();
         $baseValues = [];
         $fieldValues = $values;
         foreach ($values as $key => $value)
         {
-            if (in_array($key, $baseAttribute))
+            if (in_array($key, $baseAttributes))
             {
                 $baseValues[$key] = $value;
                 unset($fieldValues[$key]);
             }
         }
+
+        if (empty($baseValues)) $baseValues = [static::typeAttribute() => $this->typeId];
 
         $rows = $collectionClass::updateAll($baseValues, $condition);
 

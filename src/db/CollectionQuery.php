@@ -119,7 +119,7 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
                             ->andWhere([$model->fkCollectionId() => $row[$model::primaryKey()[0]]])
                             ->andWhere([$model->fkFieldId() => $fieldRecord->id])
                             ->one();
-                        $row[$attribute] = $valueRecord->value;
+                        if ($valueRecord) $row[$attribute] = $valueRecord->value;
                     }
                 }
                 $modelClass::populateRecord($model, $row);
