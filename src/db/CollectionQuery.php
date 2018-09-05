@@ -98,6 +98,7 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
 
     protected function createModels($rows)
     {
+        $type = $this->getType();
         if ($this->asArray) {
             return $rows;
         } else {
@@ -107,6 +108,20 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
             foreach ($rows as $row) {
                 $model = $class::instantiate($row);
                 $modelClass = get_class($model);
+                if ($type === null)
+                {
+                    $fieldClass = $model::collectionFieldRecord();
+                    $valueClass = $model::collectionValueRecord();
+                    foreach ($model->getCustomAttributes() as $attribute)
+                    {
+                        $fieldRecord = $fieldClass::find()->andWhere(['handle' => $attribute])->one();
+                        $valueRecord = $valueClass::find()
+                            ->andWhere([$model->fkCollectionId() => $row[$model::primaryKey()[0]]])
+                            ->andWhere([$model->fkFieldId() => $fieldRecord->id])
+                            ->one();
+                        $row[$attribute] = $valueRecord->value;
+                    }
+                }
                 $modelClass::populateRecord($model, $row);
                 $models[] = $model;
             }
