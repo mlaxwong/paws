@@ -35,38 +35,15 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
 
     public function prepare($builder)
     {
-        if (!empty($this->joinWith)) {
+        if (!empty($this->joinWith)) 
+        {
             $this->buildJoinWith();
             $this->joinWith = null;
         }
 
         if (empty($this->from)) $this->from = [$this->getPrimaryTableName()];
 
-        if (empty($this->select) && !empty($this->join)) {
-            list(, $alias) = $this->getTableNameAndAlias();
-            $this->select = ["$alias.*"];
-        }
-
-        if (empty($this->select))
-        {
-            $modelClass = $this->modelClass;
-            $collectionClass = $modelClass::collectionRecord();
-            $valueClass = $modelClass::collectionValueRecord();
-            $baseAttributes = (new $modelClass)->getBaseAttributes(); 
-            foreach ($baseAttributes as $select)
-            {
-                $this->select[] = $collectionClass::tableName() . '.' . $select;
-            }
-
-            $type = $this->getType();
-            if ($type)
-            {
-                foreach ($type->fields as $field)
-                {
-                    $this->select[] = new Expression("(SELECT `value` FROM " . $valueClass::tableName() . " WHERE `" . $modelClass::fkFieldId() . "` = '" . $field->id . "' AND `" . $modelClass::fkCollectionId() . "` = " . $collectionClass::tableName() . ".id) AS `" . $field->handle . "`");
-                }
-            }
-        }
+        $this->select = $this->getSelect($this->select);
         
         if ($this->primaryModel === null) {
             $query = Query::create($this);
@@ -95,11 +72,40 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
             $this->where = $where;
         }
 
-        if (!empty($this->on)) {
-            $query->andWhere($this->on);
-        }
+        if (!empty($this->on)) $query->andWhere($this->on);
 
         return $query;
+    }
+
+    protected function getSelect($select = null)
+    {
+        if (empty($select) && !empty($this->join)) 
+        {
+            list(, $alias) = $this->getTableNameAndAlias();
+            $select = ["$alias.*"];
+        }
+        if (empty($select)) $select = $this->getDefaultSelect();
+        return $select;
+    }
+
+    protected function getDefaultSelect()
+    {
+        $selects = [];
+        $modelClass = $this->modelClass;
+        $collectionClass = $modelClass::collectionRecord();
+        $valueClass = $modelClass::collectionValueRecord();
+        $baseAttributes = (new $modelClass)->getBaseAttributes(); 
+        foreach ($baseAttributes as $select) $selects[] = $collectionClass::tableName() . '.' . $select;
+
+        $type = $this->getType();
+        if ($type)
+        {
+            foreach ($type->fields as $field)
+            {
+                $selects[] = new Expression("(SELECT `value` FROM " . $valueClass::tableName() . " WHERE `" . $modelClass::fkFieldId() . "` = '" . $field->id . "' AND `" . $modelClass::fkCollectionId() . "` = " . $collectionClass::tableName() . ".id) AS `" . $field->handle . "`");
+            }
+        }
+        return $selects;
     }
 
     protected function createModels($rows)

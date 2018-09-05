@@ -183,15 +183,15 @@ class Collection extends BaseActiveRecord implements CollectionInterface
 
     public function updateInternal($attributes = null)
     {
-        if (!$this->beforeSave(false)) {
-            return false;
-        }
+        if (!$this->beforeSave(false)) return false;
+
         $values = $this->getDirtyAttributes($attributes);
         if (empty($values)) 
         {
             $this->afterSave(false, $values);
             return 0;
         }
+        
         $condition = $this->getOldPrimaryKey(true);
         $lock = $this->optimisticLock();
         if ($lock) 
@@ -202,7 +202,31 @@ class Collection extends BaseActiveRecord implements CollectionInterface
 
         $collectionClass = static::collectionRecord();
         $id = $condition[$collectionClass::primaryKey()[0]];
+        $collectionRecord = $collectionClass::findOne($id);
 
+        list($baseValues, $fieldValues) = $this->attributeSeparator($values);
+        if (empty($baseValues)) $baseValues = [static::typeAttribute() => $this->typeId];
+
+        $rows = $collectionClass::updateAll($baseValues, $condition);
+
+        if ($lock !== null && !$rows) throw new StaleObjectException('The object being updated is outdated.');
+        
+        $valueUpdated = $this->updateValueRecords($collectionRecord, $fieldValues);
+
+        if (isset($values[$lock])) $this->$lock = $values[$lock];
+
+        $changedAttributes = [];
+        foreach ($values as $name => $value) 
+        {
+            $changedAttributes[$name] = isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
+            $this->_oldAttributes[$name] = $value;
+        }
+        $this->afterSave(false, $changedAttributes);
+        return $rows > 0 || $valueUpdated;
+    }
+
+    protected function attributeSeparator($values)
+    {
         $baseAttributes = $this->getBaseAttributes();
         $baseValues = [];
         $fieldValues = $values;
@@ -214,37 +238,33 @@ class Collection extends BaseActiveRecord implements CollectionInterface
                 unset($fieldValues[$key]);
             }
         }
+        return [$baseValues, $fieldValues];
+    }
 
-        if (empty($baseValues)) $baseValues = [static::typeAttribute() => $this->typeId];
-
-        $rows = $collectionClass::updateAll($baseValues, $condition);
-
-        if ($lock !== null && !$rows) throw new StaleObjectException('The object being updated is outdated.');
-        
+    public function updateValueRecords($collectionRecord, array $values): bool
+    {
+        $updateStatus = true;
         $fieldClass = static::collectionFieldRecord();
         $valueClass = static::collectionValueRecord();
-        $updatedFieldrows = 0;
         $fieldConditions = [];
-        foreach ($fieldValues as $key => $value)
+
+        foreach ($values as $key => $value)
         {
-            $fieldRecord = $fieldClass::find()->andWhere(['handle' => $key])->one();
-            $valueRecord = $valueClass::find()->andWhere([static::fkFieldId() => $fieldRecord->id, static::fkCollectionId() => $id])->one();
+            $fieldRecord = $fieldClass::find()
+                ->andWhere(['handle' => $key])
+                ->one();
+
+            $valueRecord = $valueClass::find()
+                ->andWhere([static::fkFieldId() => $fieldRecord->id])
+                ->andWhere([static::fkCollectionId() => $collectionRecord->id])
+                ->one();
+
             $fieldConditions[$valueRecord::primaryKey()[0]] = $valueRecord->id;
-            $fieldConditions[static::fkCollectionId()] = $id;
-            $fieldRows = $valueClass::updateAll(['value' => $value], $fieldConditions);
-            if ($fieldRows > 0) $updatedFieldrows = 1;
-        }
+            $fieldConditions[static::fkCollectionId()] = $collectionRecord->id;
 
-        if (isset($values[$lock])) $this->$lock = $values[$lock];
-
-        $changedAttributes = [];
-        foreach ($values as $name => $value) 
-        {
-            $changedAttributes[$name] = isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
-            $this->_oldAttributes[$name] = $value;
+            if(!$valueClass::updateAll(['value' => $value], $fieldConditions)) $updateStatus = false;
         }
-        $this->afterSave(false, $changedAttributes);
-        return $rows >= $updatedFieldrows ? $rows : $updatedFieldrows;
+        return $updateStatus;
     }
 
     public static function getDb() 
