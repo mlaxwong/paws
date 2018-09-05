@@ -472,17 +472,12 @@ class CollectionCest
                 'value' => $field['value'],
             ]);
         }
-        $collections = $testClass::find()->all();
-
-        foreach ($collections as $collection)
-        {
-            print_r($collection->attributes());
-            print_r($collection->getAttributes());
-            echo 'title : ' . $collection->title;
-        }
-        die;
-
-        throw new \Exception(print_r($collection, 1));
+        $query = $testClass::find();
+        $one = $query->one();
+        foreach ($fields as $field) $I->assertEquals($field['value'], $one->{$field['name']});
+        $all = $query->all();
+        $I->assertEquals(1, count($all));
+        foreach ($all as $collection) foreach ($fields as $field) $I->assertEquals($field['value'], $collection->{$field['name']});
     }
 
     public function testGetDb(UnitTester $I)
