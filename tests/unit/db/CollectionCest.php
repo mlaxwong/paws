@@ -420,8 +420,8 @@ class CollectionCest
             public function getDirtyAttributes($name = null)
             {
                 return [
-                    'title' => 'Breaking news',
-                    'content' => 'Mlaxology just listing on stock market',
+                    'title' => 'Yeah',
+                    'content' => 'Sold out',
                 ];
             }
         };
@@ -445,10 +445,10 @@ class CollectionCest
         }
         $collection = $testClass::findOne(1);
         // print_r($collection->attributes);die;
-        $collection->title = 'Yeah';
-        $collection->content = 'Sold out';
-        $collection->save();
-        // $I->assertGreaterThen(0, $collection->updateInternal());
+        // $collection->title = 'Yeah';
+        // $collection->content = 'Sold out';
+        // $collection->save();
+        $I->assertGreaterThan(0, $collection->updateInternal());
     }
 
     public function testFind(UnitTester $I)

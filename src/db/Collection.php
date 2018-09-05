@@ -17,7 +17,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
     const OP_ALL    = 0x07;
 
     public $typeId;
-    
+
     private $_oldAttributes;
 
     public static function instantiate($row)
@@ -221,6 +221,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         
         $fieldClass = static::collectionFieldRecord();
         $valueClass = static::collectionValueRecord();
+        $updatedFieldrows = 0;
         foreach ($fieldValues as $key => $value)
         {
             $fieldRecord = $fieldClass::find()->andWhere(['handle' => $key])->one();
@@ -228,6 +229,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             $fieldConditions[$valueRecord::primaryKey()[0]] = $valueRecord->id;
             $fieldConditions[static::fkCollectionId()] = $id;
             $fieldRows = $valueClass::updateAll(['value' => $value], $fieldConditions);
+            if ($fieldRows > 0) $updatedFieldrows = 1;
         }
 
         if (isset($values[$lock])) $this->$lock = $values[$lock];
@@ -239,7 +241,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             $this->_oldAttributes[$name] = $value;
         }
         $this->afterSave(false, $changedAttributes);
-        return $rows;
+        return $rows >= $updatedFieldrows ? $row : $updatedFieldrows;
     }
 
     public static function getDb() 
