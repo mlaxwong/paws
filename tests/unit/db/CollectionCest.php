@@ -380,6 +380,88 @@ class CollectionCest
         }
     }
 
+    // public function testUpdate(UnitTester $I)
+    // {
+    //     $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+    //     $values = [
+    //         'title' => 'Breaking new',
+    //         'content' => 'Mlaxology just listing on market',
+    //     ];
+    //     $I->haveRecord(EntryType::class, [
+    //         'id' => 1,
+    //         'name' => 'Article',
+    //     ]);
+    //     foreach (array_keys($values) as $index => $customAttribute)
+    //     {
+    //         $I->haveRecord(Field::class, [
+    //             'id' => $index + 1,
+    //             'name' => $customAttribute,
+    //             'handle' => $customAttribute,
+    //         ]);
+    //         $I->haveRecord(get_class($mappingTable), [
+    //             'entry_type_id' => 1,
+    //             'field_id' => $index + 1,
+    //         ]);
+    //     }
+    //     $testClass = new class extends Collection 
+    //     { 
+    //         public $typeId = 1;
+    //         public static function collectionRecord() { return Entry::class; } 
+    //         public static function collectionFieldRecord() { return Field::class; } 
+    //         public static function typeAttribute() { return 'entry_type_id'; }
+    //         public function getDirtyAttributes($name = null)
+    //         {
+    //             return [
+    //                 'title' => 'Breaking new',
+    //                 'content' => 'Mlaxology just listing on market',
+    //             ];
+    //         }
+    //     };
+    //     $I->assertGreaterThen(0, $testClass->updateInternal());
+    // }
+
+    public function testFind(UnitTester $I)
+    {
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $customAttributes = ['title', 'content'];
+        $I->haveRecord(EntryType::class, [
+            'id' => 1,
+            'name' => 'Article',
+        ]);
+        foreach ($customAttributes as $index => $customAttribute)
+        {
+            $I->haveRecord(Field::class, [
+                'id' => $index + 1,
+                'name' => $customAttribute,
+                'handle' => $customAttribute,
+            ]);
+            $I->haveRecord(get_class($mappingTable), [
+                'entry_type_id' => 1,
+                'field_id' => $index + 1,
+            ]);
+        }
+        $I->haveRecord(Entry::class, [
+            'id' => 1,
+            'entry_type_id' => 1,
+        ]);
+        $testClass = new class extends Collection 
+        {
+            public static function collectionRecord() { return Entry::class; }
+            public static function typeAttribute() { return 'entry_type_id'; }
+        };
+        $collections = $testClass::find()->all();
+
+        foreach ($collections as $collection)
+        {
+            print_r($collection->attributes());
+            print_r($collection->getAttributes());
+            echo 'title : ' . $collection->title;
+        }
+        die;
+
+        throw new \Exception(print_r($collection, 1));
+    }
+
     public function testGetDb(UnitTester $I)
     {
         $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };

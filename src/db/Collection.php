@@ -2,10 +2,12 @@
 namespace paws\db;
 
 use yii\db\BaseActiveRecord;
+use yii\db\StaleObjectException;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 use yii\helpers\ArrayHelper;
 use paws\db\CollectionInterface;
+use paws\db\CollectionQuery;
 
 class Collection extends BaseActiveRecord implements CollectionInterface
 {
@@ -15,6 +17,11 @@ class Collection extends BaseActiveRecord implements CollectionInterface
     const OP_ALL    = 0x07;
 
     public $typeId;
+
+    public static function instantiate($row)
+    {
+        return new static(['typeId' => $row[static::typeAttribute()]]);
+    }
 
     public static function collectionRecord() 
     {
@@ -114,7 +121,10 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         return $recordClass::primaryKey();
     }
 
-    public static function find() {}
+    public static function find() 
+    {
+        return new CollectionQuery(static::class);
+    }
 
     public function insert($runValidation = true, $attributes = null) 
     {
@@ -167,6 +177,65 @@ class Collection extends BaseActiveRecord implements CollectionInterface
             'value'                     => $value,
         ]);
         return $valueRecord->save() ? $valueRecord->id : false;
+    }
+
+    public function updateInternal($attributes = null)
+    {
+        if (!$this->beforeSave(false)) {
+            return false;
+        }
+        $values = $this->getDirtyAttributes($attributes);
+        if (empty($values)) {
+            $this->afterSave(false, $values);
+            return 0;
+        }
+        $condition = $this->getOldPrimaryKey(true);
+        $lock = $this->optimisticLock();
+        if ($lock !== null) {
+            $values[$lock] = $this->$lock + 1;
+            $condition[$lock] = $this->$lock;
+        }
+
+        $collectionClass = static::collectionRecord();
+        $id = $condition[$collectionClass::primaryKey()[0]];
+
+        $baseAttribute = $this->getBaseAttributes();
+        $baseValues = [];
+        $fieldValues = $values;
+        foreach ($values as $key => $value)
+        {
+            if (in_array($key, $baseAttribute))
+            {
+                $baseValues[$key] = $value;
+                unset($fieldValues[$key]);
+            }
+        }
+
+        $rows = $collectionClass::updateAll($baseValues, $condition);
+
+        if ($lock !== null && !$rows) throw new StaleObjectException('The object being updated is outdated.');
+        
+        $fieldClass = static::collectionFieldRecord();
+        $valueClass = static::collectionValueRecord();
+        foreach ($fieldValues as $key => $value)
+        {
+            $fieldRecord = $fieldClass::find()->andWhere(['handle' => $key])->one();
+            $valueRecord = $valueClass::find()->andWhere([static::fkFieldId() => $fieldRecord->id, static::fkCollectionId() => $id])->one();
+            $fieldConditions[$valueRecord::primaryKey()[0]] = $valueRecord->id;
+            $fieldConditions[static::fkCollectionId()] = $id;
+            $fieldRows = $valueClass::updateAll(['value' => $value], $fieldConditions);
+        }
+
+        if (isset($values[$lock])) $this->$lock = $values[$lock];
+
+        $changedAttributes = [];
+        foreach ($values as $name => $value) 
+        {
+            $changedAttributes[$name] = isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
+            $this->_oldAttributes[$name] = $value;
+        }
+        $this->afterSave(false, $changedAttributes);
+        return $rows;
     }
 
     public static function getDb() 

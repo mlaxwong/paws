@@ -5,6 +5,7 @@ use Exception;
 use Throwable;
 use yii\db\BaseActiveRecord;
 use yii\db\ActiveRecordInterface;
+use yii\db\StaleObjectException;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use Paws;
