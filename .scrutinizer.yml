@@ -23,9 +23,9 @@ checks:
     php: true
 
 build_failure_conditions:
-    - 'elements.rating(<= D).exists'
-    - 'elements.rating(<= D).new.exists'
+    - 'elements.rating(<= C).exists'
+    - 'elements.rating(<= C).new.exists'
     - 'issues.label("coding-style").new.count > 5'
-    - 'project.metric("scrutinizer.quality", < 9.8)'
-    - 'project.metric("scrutinizer.test_coverage", < 0.90)'
-    - 'project.metric_change("scrutinizer.test_coverage", < -0.2)'
+    #- 'project.metric("scrutinizer.quality", < 9.8)'
+    #- 'project.metric("scrutinizer.test_coverage", < 0.90)'
+    #- 'project.metric_change("scrutinizer.test_coverage", < -0.2)'

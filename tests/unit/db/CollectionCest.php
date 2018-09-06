@@ -122,6 +122,36 @@ class CollectionCest
         $I->assertEquals('custom\\collection\\type\\Record', $testClass::collectionValueRecord());
     }
 
+    public function testCollectionFieldRecord(UnitTester $I) 
+    {
+        // default
+        $I->assertEquals(Collection::collectionRecord() . 'Field', Collection::collectionFieldRecord());
+
+        // extended
+        $testClass = new class extends Collection {};
+        $I->assertEquals('paws\\records\\' . Inflector::camelize(StringHelper::basename(get_class($testClass))) . 'Field', $testClass::collectionFieldRecord());
+
+        // customize
+        $testClass = new class extends Collection {
+            public static function collectionRecord()
+            {
+                return 'this\\is\\testing\\Class';
+            }
+        };
+        $I->assertEquals('this\\is\\testing\\ClassField', $testClass::collectionFieldRecord());
+        $testClass = new class extends Collection {
+            public static function collectionRecord()
+            {
+                return 'this\\is\\testing\\Class';
+            }
+            public static function collectionFieldRecord()
+            {
+                return 'custom\\collection\\type\\Record';
+            }
+        };
+        $I->assertEquals('custom\\collection\\type\\Record', $testClass::collectionFieldRecord());
+    }
+
     public function testFkCollectionId(UnitTester $I)
     {
         $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
