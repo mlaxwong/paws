@@ -2,13 +2,13 @@
 namespace paws\records;
 
 use yii\db\ActiveRecord;
-use paws\records\EntryType;
+use paws\records\CollectionType;
 
-class Field extends ActiveRecord
+class CollectionField extends ActiveRecord
 {
     public static function tableName()
     {
-        return '{{%field}}';
+        return '{{%collection_field}}';
     }
 
     public function rules()
@@ -20,8 +20,8 @@ class Field extends ActiveRecord
         ];  
     }
 
-    public function getEntryTypes()
+    public function getCollectionTypes()
     {
-        return $this->hasMany(EntryType::class, ['id' => 'entry_type_id'])->viaTable('{{%entry_type_field_map}}', ['field_id' => 'id']);
+        return $this->hasMany(CollectionType::class, ['id' => 'collection_type_id'])->viaTable('{{%collection_type_field_map}}', ['collection_field_id' => 'id']);
     }
 }

@@ -8,13 +8,13 @@ use yii\helpers\StringHelper;
 use yii\helpers\ArrayHelper;
 use Paws;
 use paws\tests\UnitTester;
-use paws\db\Collection;
+use paws\db\Collection AS DbCollection;
 use paws\db\RecordInterface;
 use paws\db\CollectionInterface;
-use paws\records\Field;
-use paws\records\Entry;
-use paws\records\EntryType;
-use paws\records\EntryValue;
+use paws\records\CollectionField;
+use paws\records\Collection;
+use paws\records\CollectionType;
+use paws\records\CollectionValue;
 
 class CollectionCest
 {
@@ -29,12 +29,12 @@ class CollectionCest
     // tests
     public function testCreate(UnitTester $I)
     {
-        $collection = new Collection;
+        $collection = new DbCollection;
     }
 
     public function testInstanceOfInterfaces(UnitTester $I)
     {
-        $collection = new Collection;
+        $collection = new DbCollection;
         $interfaces = [
             ActiveRecordInterface::class,
             RecordInterface::class,
@@ -46,14 +46,14 @@ class CollectionCest
     public function testCollectionRecord(UnitTester $I)
     {
         // default
-        $I->assertEquals('paws\\records\\Collection', Collection::collectionRecord());
+        $I->assertEquals('paws\\records\\Collection', DbCollection::collectionRecord());
 
         // extended
-        $testClass = new class extends Collection {};
+        $testClass = new class extends DbCollection {};
         $I->assertEquals('paws\\records\\' . Inflector::camelize(StringHelper::basename(get_class($testClass))), $testClass::collectionRecord());
 
         // customize
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
@@ -65,21 +65,21 @@ class CollectionCest
     public function testCollectionTypeRecord(UnitTester $I) 
     {
         // default
-        $I->assertEquals(Collection::collectionRecord() . 'Type', Collection::collectionTypeRecord());
+        $I->assertEquals(DbCollection::collectionRecord() . 'Type', DbCollection::collectionTypeRecord());
 
         // extended
-        $testClass = new class extends Collection {};
+        $testClass = new class extends DbCollection {};
         $I->assertEquals('paws\\records\\' . Inflector::camelize(StringHelper::basename(get_class($testClass))) . 'Type', $testClass::collectionTypeRecord());
 
         // customize
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
             }
         };
         $I->assertEquals('this\\is\\testing\\ClassType', $testClass::collectionTypeRecord());
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
@@ -95,21 +95,21 @@ class CollectionCest
     public function testCollectionValueRecord(UnitTester $I) 
     {
         // default
-        $I->assertEquals(Collection::collectionRecord() . 'Value', Collection::collectionValueRecord());
+        $I->assertEquals(DbCollection::collectionRecord() . 'Value', DbCollection::collectionValueRecord());
 
         // extended
-        $testClass = new class extends Collection {};
+        $testClass = new class extends DbCollection {};
         $I->assertEquals('paws\\records\\' . Inflector::camelize(StringHelper::basename(get_class($testClass))) . 'Value', $testClass::collectionValueRecord());
 
         // customize
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
             }
         };
         $I->assertEquals('this\\is\\testing\\ClassValue', $testClass::collectionValueRecord());
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
@@ -125,21 +125,21 @@ class CollectionCest
     public function testCollectionFieldRecord(UnitTester $I) 
     {
         // default
-        $I->assertEquals(Collection::collectionRecord() . 'Field', Collection::collectionFieldRecord());
+        $I->assertEquals(DbCollection::collectionRecord() . 'Field', DbCollection::collectionFieldRecord());
 
         // extended
-        $testClass = new class extends Collection {};
+        $testClass = new class extends DbCollection {};
         $I->assertEquals('paws\\records\\' . Inflector::camelize(StringHelper::basename(get_class($testClass))) . 'Field', $testClass::collectionFieldRecord());
 
         // customize
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
             }
         };
         $I->assertEquals('this\\is\\testing\\ClassField', $testClass::collectionFieldRecord());
-        $testClass = new class extends Collection {
+        $testClass = new class extends DbCollection {
             public static function collectionRecord()
             {
                 return 'this\\is\\testing\\Class';
@@ -154,36 +154,36 @@ class CollectionCest
 
     public function testFkCollectionId(UnitTester $I)
     {
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
-        $I->assertEquals('entry_id', $testClass::fkCollectionId());
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
+        $I->assertEquals('collection_id', $testClass::fkCollectionId());
     }
 
     public function testFkFieldId(UnitTester $I)
     {
-        $testClass = new class extends Collection { public static function collectionFieldRecord() { return Field::class; } };
-        $I->assertEquals('field_id', $testClass::fkFieldId());
+        $testClass = new class extends DbCollection { public static function collectionFieldRecord() { return CollectionField::class; } };
+        $I->assertEquals('collection_field_id', $testClass::fkFieldId());
     }
 
     public function testTypeAttribute(UnitTester $I)
     {
         // default
-        $I->assertEquals('collection_type_id', Collection::typeAttribute());
+        $I->assertEquals('collection_type_id', DbCollection::typeAttribute());
 
         // extended
-        $testClass = new class extends Collection {};
+        $testClass = new class extends DbCollection {};
         $I->assertEquals(Inflector::camel2id(StringHelper::basename(get_class($testClass)), '_') . '_type_id', $testClass::typeAttribute());
     }
 
     public function testGetBaseAttribute(UnitTester $I)
     {
         // default
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
-        $I->assertEquals((new Entry)->attributes(), $testClass->getBaseAttributes());
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
+        $I->assertEquals((new Collection)->attributes(), $testClass->getBaseAttributes());
 
         // custom
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         { 
-            public static function collectionRecord() { return Entry::class; } 
+            public static function collectionRecord() { return Collection::class; } 
             public function getBaseAttributes() { return ['testing1', 'testing2']; } 
         };
         $I->assertEquals(['testing1', 'testing2'], $testClass->getBaseAttributes());
@@ -191,25 +191,25 @@ class CollectionCest
 
     public function testGetCustomAttributes(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $customAttributes = ['title', 'content'];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $customAttribute,
                 'handle' => $customAttribute,
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
         }
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
         $I->assertNull($testClass->getType());
         $I->assertEquals([], $testClass->getCustomAttributes());
 
@@ -220,26 +220,26 @@ class CollectionCest
 
     public function testAttributes(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $customAttributes = ['title', 'content'];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $customAttribute,
                 'handle' => $customAttribute,
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
         }
 
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
         $I->assertEquals($testClass->getBaseAttributes(), $testClass->attributes());
 
         $testClass->typeId = 1;
@@ -248,27 +248,27 @@ class CollectionCest
 
     public function testGetType(UnitTester $I)
     {
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'testing'
         ]);
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         {
             public $typeId = 1;
-            public static function collectionRecord()  { return Entry::class; } 
+            public static function collectionRecord()  { return Collection::class; } 
         };
-        $I->assertEquals(EntryType::findOne(1), $testClass->getType());
+        $I->assertEquals(CollectionType::findOne(1), $testClass->getType());
     }
 
     public function testBaseRules(UnitTester $I)
     {
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
-        $I->assertEquals((new Entry)->rules(), $testClass->baseRules());
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
+        $I->assertEquals((new Collection)->rules(), $testClass->baseRules());
     }
 
     public function testRules(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $customAttributes = [
             [
                 'name' => 'title',
@@ -283,23 +283,23 @@ class CollectionCest
                 ],
             ],
         ];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
         $rules = [];
         foreach ($customAttributes as $index => $customAttribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $customAttribute['name'],
                 'handle' => $customAttribute['name'],
                 'config' => json_encode($customAttribute['config']),
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
 
             $config = $customAttribute['config'];
@@ -318,43 +318,43 @@ class CollectionCest
 
     public function testPrimaryKey(UnitTester $I)
     {
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
-        $I->assertEquals(Entry::primaryKey(), $testClass::primaryKey());
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
+        $I->assertEquals(Collection::primaryKey(), $testClass::primaryKey());
     }
 
     public function testInsertValueRecord(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $customAttributes = ['title', 'content'];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $customAttribute,
                 'handle' => $customAttribute,
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
         }
-        $I->haveRecord(Entry::class, [
+        $I->haveRecord(Collection::class, [
             'id' => 1,
-            'entry_type_id' => 1,
+            'collection_type_id' => 1,
         ]);
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         { 
-            public static function collectionRecord() { return Entry::class; } 
-            public static function collectionFieldRecord() { return Field::class; } 
+            public static function collectionRecord() { return Collection::class; } 
+            public static function collectionFieldRecord() { return CollectionField::class; } 
         };
 
-        $I->assertNotFalse($valueId = $testClass->insertValueRecord(Entry::findOne(1), Field::findOne(1), 'testing'));
-        $I->seeRecord(EntryValue::class, [
-            EntryValue::primaryKey()[0] => $valueId,
+        $I->assertNotFalse($valueId = $testClass->insertValueRecord(Collection::findOne(1), CollectionField::findOne(1), 'testing'));
+        $I->seeRecord(CollectionValue::class, [
+            CollectionValue::primaryKey()[0] => $valueId,
             $testClass::fkCollectionId() => 1,
             $testClass::fkFieldId() => 1,
             'value' => 'testing',
@@ -363,33 +363,33 @@ class CollectionCest
 
     public function testInsert(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $values = [
             'title' => 'Breaking news',
             'content' => 'Mlaxology just listing on stock market',
         ];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
         foreach (array_keys($values) as $index => $customAttribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $customAttribute,
                 'handle' => $customAttribute,
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
         }
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         { 
             public $typeId = 1;
-            public static function collectionRecord() { return Entry::class; } 
-            public static function collectionFieldRecord() { return Field::class; } 
-            public static function typeAttribute() { return 'entry_type_id'; }
+            public static function collectionRecord() { return Collection::class; } 
+            public static function collectionFieldRecord() { return CollectionField::class; } 
+            public static function typeAttribute() { return 'collection_type_id'; }
             public function getDirtyAttributes($name = null)
             {
                 return [
@@ -402,7 +402,7 @@ class CollectionCest
 
         foreach (array_values($values) as $index => $value)
         {
-            $I->seeRecord(EntryValue::class, [
+            $I->seeRecord(CollectionValue::class, [
                 $testClass::fkCollectionId() => $testClass->id,
                 $testClass::fkFieldId() => $index + 1,
                 'value' => $value,
@@ -412,7 +412,7 @@ class CollectionCest
 
     public function testUpdate(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $fields = [
             [
                 'name' => 'title',
@@ -434,19 +434,19 @@ class CollectionCest
             'title' => 'Breaking news',
             'content' => 'Mlaxology just listing on stock market',
         ];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
-        $I->haveRecord(Entry::class, [
+        $I->haveRecord(Collection::class, [
             'id' => 1,
-            'entry_type_id' => 1,
+            'collection_type_id' => 1,
         ]);
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         { 
-            public static function collectionRecord() { return Entry::class; } 
-            public static function collectionFieldRecord() { return Field::class; } 
-            public static function typeAttribute() { return 'entry_type_id'; }
+            public static function collectionRecord() { return Collection::class; } 
+            public static function collectionFieldRecord() { return CollectionField::class; } 
+            public static function typeAttribute() { return 'collection_type_id'; }
             public function getDirtyAttributes($name = null)
             {
                 return [
@@ -457,17 +457,17 @@ class CollectionCest
         };
         foreach ($fields as $index => $field)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $field['name'],
                 'handle' => $field['name'],
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
-            $I->haveRecord(EntryValue::class, [
-                EntryValue::primaryKey()[0] => $index + 1,
+            $I->haveRecord(CollectionValue::class, [
+                CollectionValue::primaryKey()[0] => $index + 1,
                 $testClass::fkCollectionId() => 1,
                 $testClass::fkFieldId() => $index + 1,
                 'value' => $field['value'],
@@ -484,13 +484,13 @@ class CollectionCest
 
     public function testFind(UnitTester $I)
     {
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         {
-            public static function collectionRecord() { return Entry::class; }
-            public static function collectionFieldRecord() { return Field::class; }
-            public static function typeAttribute() { return 'entry_type_id'; }
+            public static function collectionRecord() { return Collection::class; }
+            public static function collectionFieldRecord() { return CollectionField::class; }
+            public static function typeAttribute() { return 'collection_type_id'; }
         };
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $fields = [
             [
                 'name' => 'title',
@@ -507,28 +507,28 @@ class CollectionCest
                 'value' => 'Mlaxology just listing on stock market',
             ],
         ];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
-        $I->haveRecord(Entry::class, [
+        $I->haveRecord(Collection::class, [
             'id' => 1,
-            'entry_type_id' => 1,
+            'collection_type_id' => 1,
         ]);
         foreach ($fields as $index => $field)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $field['name'],
                 'handle' => $field['name'],
                 'config' => json_encode($field['config']),
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
-            $I->haveRecord(EntryValue::class, [
-                EntryValue::primaryKey()[0] => $index + 1,
+            $I->haveRecord(CollectionValue::class, [
+                CollectionValue::primaryKey()[0] => $index + 1,
                 $testClass::fkCollectionId() => 1,
                 $testClass::fkFieldId() => $index + 1,
                 'value' => $field['value'],
@@ -544,7 +544,7 @@ class CollectionCest
 
     public function testGetDb(UnitTester $I)
     {
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
-        $I->assertEquals(Entry::getDb(), $testClass::getDb());
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
+        $I->assertEquals(Collection::getDb(), $testClass::getDb());
     }
 }

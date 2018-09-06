@@ -5,12 +5,12 @@ use yii\db\QueryBuilder;
 use yii\db\Query;
 use yii\db\ActiveRecord;
 use paws\tests\UnitTester;
-use paws\db\Collection;
+use paws\db\Collection as DbCollection;
 use paws\db\CollectionQuery;
-use paws\records\Entry;
-use paws\records\EntryType;
-use paws\records\EntryValue;
-use paws\records\Field;
+use paws\records\Collection;
+use paws\records\CollectionType;
+use paws\records\CollectionValue;
+use paws\records\CollectionField;
 
 class CollectionQueryCest
 {
@@ -25,11 +25,11 @@ class CollectionQueryCest
     // tests
     public function testType(UnitTester $I)
     {
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
-        $testClass = new class extends Collection { public static function collectionRecord() { return Entry::class; } };
+        $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
         $activeQuery = new CollectionQuery($testClass);
         $I->assertNull($I->invokeProperty($activeQuery, '_type'));
         $activeQuery->type(1);
@@ -39,28 +39,28 @@ class CollectionQueryCest
 
     public function testPrepare(UnitTester $I)
     {
-        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%entry_type_field_map}}'; } };
+        $mappingTable = new class extends ActiveRecord { public static function tableName() { return '{{%collection_type_field_map}}'; } };
         $attributes = ['title', 'content'];
-        $I->haveRecord(EntryType::class, [
+        $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
         ]);
         foreach ($attributes as $index => $attribute)
         {
-            $I->haveRecord(Field::class, [
+            $I->haveRecord(CollectionField::class, [
                 'id' => $index + 1,
                 'name' => $attribute,
                 'handle' => $attribute,
             ]);
             $I->haveRecord(get_class($mappingTable), [
-                'entry_type_id' => 1,
-                'field_id' => $index + 1,
+                'collection_type_id' => 1,
+                'collection_field_id' => $index + 1,
             ]);
         }
-        $testClass = new class extends Collection 
+        $testClass = new class extends DbCollection 
         { 
-            public static function collectionRecord() { return Entry::class; } 
-            public static function collectionFieldRecord() { return Field::class; } 
+            public static function collectionRecord() { return Collection::class; } 
+            public static function collectionFieldRecord() { return CollectionField::class; } 
         };
         $collectionClass = $testClass::collectionRecord();
         $activeQuery = new CollectionQuery($testClass);
@@ -73,7 +73,7 @@ class CollectionQueryCest
 
         foreach ($testClass->getBaseAttributes() as $baseAttribute) $select[] = '`' . $collectionClass::getTableSchema()->name . '`.`' . $baseAttribute . '`';
         
-        foreach ($attributes as $index => $attribute) $select[] = "(SELECT `value` FROM `" . EntryValue::getTableSchema()->name . "` WHERE `" . $testClass::fkFieldId() . "` = '" . ($index + 1) . "' AND `" . $testClass::fkCollectionId() . "` = `" . $collectionClass::getTableSchema()->name . "`.id) AS `" . $attribute . "`";
+        foreach ($attributes as $index => $attribute) $select[] = "(SELECT `value` FROM `" . CollectionValue::getTableSchema()->name . "` WHERE `" . $testClass::fkFieldId() . "` = '" . ($index + 1) . "' AND `" . $testClass::fkCollectionId() . "` = `" . $collectionClass::getTableSchema()->name . "`.id) AS `" . $attribute . "`";
         
         $sql .= implode(', ', $select);
         $sql .= ' FROM `' .  $collectionClass::getTableSchema()->name . '`';

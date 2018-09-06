@@ -4,9 +4,9 @@ namespace paws\migrations;
 use paws\db\Migration;
 use paws\helpers\MigrationHelper;
 
-class M180815223423_create_table_field extends Migration
+class M180815223423_create_table_collection_field extends Migration
 {
-    public $tableName = 'field';
+    public $tableName = 'collection_field';
     
     public function safeUp()
     {
@@ -32,7 +32,7 @@ class M180815223423_create_table_field extends Migration
 
     public function down()
     {
-        echo "M180815223423_create_table_field cannot be reverted.\n";
+        echo "M180815223423_create_table_collection_field cannot be reverted.\n";
 
         return false;
     }

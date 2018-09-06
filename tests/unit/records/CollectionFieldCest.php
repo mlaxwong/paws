@@ -4,10 +4,10 @@ namespace paws\tests\records;
 use yii\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
 use paws\tests\UnitTester;
-use paws\records\Field;
-use paws\records\EntryType;
+use paws\records\CollectionField;
+use paws\records\CollectionType;
 
-class FieldCest
+class CollectionFieldCest
 {
     public function _before(UnitTester $I)
     {
@@ -20,16 +20,16 @@ class FieldCest
     // tests
     public function testAttributes(UnitTester $I)
     {
-        $model = new Field;
+        $model = new CollectionField;
         $I->assertEquals(['id', 'name', 'handle', 'config'], $model->attributes());
     }
 
     public function testLoad(UnitTester $I)
     {
-        $model = new Field;
+        $model = new CollectionField;
 
         $data = [
-            'Field' => [
+            'CollectionField' => [
                 'name' => 'name' . uniqid(), 
                 'handle' => 'handle' . uniqid(),
                 'config' => json_encode([uniqid(), uniqid(), uniqid()]),
@@ -40,15 +40,15 @@ class FieldCest
         $I->assertTrue($model->load($data));
         $I->assertEquals([
             'id' => null, 
-            'name' => $data['Field']['name'], 
-            'handle' => $data['Field']['handle'],
-            'config' => $data['Field']['config'],
+            'name' => $data['CollectionField']['name'], 
+            'handle' => $data['CollectionField']['handle'],
+            'config' => $data['CollectionField']['config'],
         ], $model->attributes);
     }
 
     public function testCreate(UnitTester $I)
     {
-        $field = new Field;
+        $field = new CollectionField;
 
         $I->assertFalse($field->save());
 
@@ -61,15 +61,15 @@ class FieldCest
             'name' => 'name' . uniqid(),
             'config' => json_encode([uniqid(), uniqid(), uniqid()]),
         ];
-        $field = new Field($data);
+        $field = new CollectionField($data);
         $I->assertTrue($field->save());
         $I->assertFalse($field->isNewRecord);
-        $I->seeRecord(Field::class, ArrayHelper::merge($data, ['id' => $field->id]));
+        $I->seeRecord(CollectionField::class, ArrayHelper::merge($data, ['id' => $field->id]));
     }
 
-    public function testGetEntryTypes(UnitTester $I)
+    public function testGetCollectionTypes(UnitTester $I)
     {
-        $I->haveRecord(Field::class, [
+        $I->haveRecord(CollectionField::class, [
             'id' => 1,
             'handle' => 'handle' . uniqid(),
             'name' => 'name' . uniqid(),
@@ -79,7 +79,7 @@ class FieldCest
         $ids = [];
         for ($i = 1; $i <= 3; $i++)
         {
-            $I->haveRecord(EntryType::class, [
+            $I->haveRecord(CollectionType::class, [
                 'id' => $i,
                 'name' => 'name' . uniqid(),
             ]);
@@ -88,19 +88,19 @@ class FieldCest
             {
                 public static function tableName()
                 {
-                    return '{{%entry_type_field_map}}';
+                    return '{{%collection_type_field_map}}';
                 }
             };
 
             $I->haveRecord(get_class($maping), [
-                'entry_type_id' => $i,
-                'field_id' => 1,
+                'collection_type_id' => $i,
+                'collection_field_id' => 1,
             ]);
 
             $ids[] = $i;
         }
 
-        $field = Field::findOne(1);
-        foreach ($field->entryTypes as $i => $entryType) $I->assertEquals($ids[$i], $entryType->id);
+        $field = CollectionField::findOne(1);
+        foreach ($field->collectionTypes as $i => $collectionType) $I->assertEquals($ids[$i], $collectionType->id);
     }
 }

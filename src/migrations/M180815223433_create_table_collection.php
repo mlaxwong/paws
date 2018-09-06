@@ -4,15 +4,15 @@ namespace paws\migrations;
 use paws\db\Migration;
 use paws\helpers\MigrationHelper;
 
-class M180815223433_create_table_entry extends Migration
+class M180815223433_create_table_collection extends Migration
 {
-    public $tableName = 'entry';
+    public $tableName = 'collection';
 
     public function safeUp()
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
-            'entry_type_id' => $this->integer(11)->unsigned(),
+            'collection_type_id' => $this->integer(11)->unsigned(),
             // 'name' => $this->string(256)->notNull(),
             // 'handle' => $this->string(256)->notNull(),
             'created_at' => $this->timestamp()->defaultValue(null),
@@ -20,16 +20,16 @@ class M180815223433_create_table_entry extends Migration
         ]);
 
         $this->addForeignKey(
-            MigrationHelper::fk($this->tableName, 'entry_type_id'),
-            MigrationHelper::prefix($this->tableName), 'entry_type_id',
-            MigrationHelper::prefix('entry_type'), 'id',
+            MigrationHelper::fk($this->tableName, 'collection_type_id'),
+            MigrationHelper::prefix($this->tableName), 'collection_type_id',
+            MigrationHelper::prefix('collection_type'), 'id',
             'cascade', 'cascade'
         );
     }
 
     public function safeDown()
     {
-        $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'entry_type_id'), MigrationHelper::prefix($this->tableName));
+        $this->dropForeignKey(MigrationHelper::fk($this->tableName, 'collection_type_id'), MigrationHelper::prefix($this->tableName));
         $this->dropTable(MigrationHelper::prefix($this->tableName));
     }
 
@@ -42,7 +42,7 @@ class M180815223433_create_table_entry extends Migration
 
     public function down()
     {
-        echo "M180815223433_create_table_entry cannot be reverted.\n";
+        echo "M180815223433_create_table_collection cannot be reverted.\n";
 
         return false;
     }
