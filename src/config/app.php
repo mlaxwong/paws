@@ -6,6 +6,6 @@ return [
     'runtimePath' => '@runtime',
     // 'controllerNamespace' => 'paws\controllers',
     'components' => [
-        'record' => paws\service\Record::class
+        'records' => paws\service\Record::class
     ]
 ];
