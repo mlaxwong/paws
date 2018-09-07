@@ -82,7 +82,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
     public function baseRules()
     {
         $recordClass = $this->collectionRecord();
-        return $recordClass::rules();
+        return (new $recordClass)->rules();
     }
 
     public function customRules()
