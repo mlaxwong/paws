@@ -82,6 +82,7 @@ class CollectionFieldCest
             $I->haveRecord(CollectionType::class, [
                 'id' => $i,
                 'name' => 'name' . uniqid(),
+                'handle' => 'handle' . uniqid(),
             ]);
             
             $maping = new Class extends ActiveRecord

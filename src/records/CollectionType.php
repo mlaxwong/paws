@@ -27,8 +27,8 @@ class CollectionType extends ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 256],
+            [['name', 'handle'], 'required'],
+            [['name', 'handle'], 'string', 'max' => 256],
             [['collection_field_ids'], 'each', 'rule' => ['integer']],
         ];
     }

@@ -21,7 +21,7 @@ class CollectionTypeCest
     public function testAttributes(UnitTester $I)
     {
         $model = new CollectionType;
-        $I->assertEquals(['id', 'name'], $model->attributes());
+        $I->assertEquals(['id', 'name', 'handle'], $model->attributes());
     }
 
     public function testLoad(UnitTester $I)
@@ -29,9 +29,9 @@ class CollectionTypeCest
         $model = new CollectionType;
         $I->assertFalse($model->load([]));
 
-        $data = ['CollectionType' => ['name' => 'name' . uniqid()]];
+        $data = ['CollectionType' => ['name' => 'name' . uniqid(), 'handle' => 'handle' . uniqid()]];
         $I->assertTrue($model->load($data));
-        $I->assertEquals(['id' => null, 'name' => $data['CollectionType']['name']], $model->attributes);
+        $I->assertEquals(['id' => null, 'name' => $data['CollectionType']['name'], 'handle' => $data['CollectionType']['handle']], $model->attributes);
     }
 
     public function testCreate(UnitTester $I)
@@ -43,7 +43,8 @@ class CollectionTypeCest
 
         // create collection type
         $name = 'name' . uniqid();
-        $collectionType = new CollectionType(compact('name'));
+        $handle = 'handle' . uniqid();
+        $collectionType = new CollectionType(compact('name', 'handle'));
         $I->assertTrue($collectionType->save());
 
         // create collections

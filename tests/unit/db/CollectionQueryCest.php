@@ -28,6 +28,7 @@ class CollectionQueryCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         $testClass = new class extends DbCollection { public static function collectionRecord() { return Collection::class; } };
         $activeQuery = new CollectionQuery($testClass);
@@ -44,6 +45,7 @@ class CollectionQueryCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         foreach ($attributes as $index => $attribute)
         {

@@ -50,7 +50,8 @@ class CollectionValueCest
         $I->assertTrue($field->save());
 
         $name = 'name' . uniqid();
-        $collectionType = new CollectionType(compact('name'));
+        $handle = 'handle' . uniqid();
+        $collectionType = new CollectionType(compact('name', 'handle'));
         $I->assertTrue($collectionType->save());
 
         $collection = new Collection([

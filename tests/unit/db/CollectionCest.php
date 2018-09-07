@@ -29,7 +29,7 @@ class CollectionCest
     // tests
     public function testCreate(UnitTester $I)
     {
-        $type = new CollectionType(['name' => 'Article']);
+        $type = new CollectionType(['name' => 'Article', 'handle' => 'article']);
         $I->assertTrue($type->save());
 
         $fields = [
@@ -50,7 +50,7 @@ class CollectionCest
             $I->assertTrue($fields[$index]->save());
             $type->link('fields', $fields[$index]);
         }
-
+        
         $collection = new Collection(['typeId' => $type->id]);
         $I->assertEquals([
             'id'                    => null,
@@ -74,7 +74,7 @@ class CollectionCest
 
     public function testLoad(UnitTester $I)
     {
-        $type = new CollectionType(['name' => 'Article']);
+        $type = new CollectionType(['name' => 'Article', 'handle' => 'article']);
         $I->assertTrue($type->save());
 
         $fields = [
@@ -280,6 +280,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
@@ -309,6 +310,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
@@ -334,7 +336,8 @@ class CollectionCest
     {
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
-            'name' => 'testing'
+            'name' => 'testing',
+            'handle' => 'testing',
         ]);
         $testClass = new class extends Collection 
         {
@@ -370,6 +373,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         $testClass = new class extends Collection { public static function collectionRecord() { return CollectionRecord::class; } };
         $rules = [];
@@ -413,6 +417,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         foreach ($customAttributes as $index => $customAttribute)
         {
@@ -455,6 +460,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         foreach (array_keys($values) as $index => $customAttribute)
         {
@@ -521,6 +527,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         $I->haveRecord(CollectionRecord::class, [
             'id' => 1,
@@ -594,6 +601,7 @@ class CollectionCest
         $I->haveRecord(CollectionType::class, [
             'id' => 1,
             'name' => 'Article',
+            'handle' => 'article',
         ]);
         $I->haveRecord(CollectionRecord::class, [
             'id' => 1,

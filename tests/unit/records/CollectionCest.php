@@ -49,7 +49,7 @@ class CollectionCest
         $I->assertFalse($collection->save());
         unset($collection);
         
-        $collectionType = new CollectionType(['name' => 'testing']);
+        $collectionType = new CollectionType(['name' => 'testing', 'handle' => 'testing']);
         $I->assertTrue($collectionType->save());
 
         $data = [

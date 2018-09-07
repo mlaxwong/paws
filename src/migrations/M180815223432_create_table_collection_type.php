@@ -13,6 +13,7 @@ class M180815223432_create_table_collection_type extends Migration
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
             'name' => $this->string(256)->notNull(),
+            'handle' => $this->string(256)->notNull(),
         ]);
     }
 
