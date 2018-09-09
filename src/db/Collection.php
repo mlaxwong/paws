@@ -148,7 +148,11 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         $collectionClass = static::collectionRecord();
         $collectionRecord = new $collectionClass($baseValues);
         $collectionRecord->{static::typeAttribute()} = $this->typeId;
-        if (!$collectionRecord->save(false)) return false;
+        if (!$collectionRecord->save()) 
+        {
+            $this->addErrors($collectionRecord->errors);
+            return false;
+        }
         $primaryKeys = $collectionRecord::primaryKey();
         foreach ($primaryKeys as $primaryKey)
         {
@@ -258,6 +262,15 @@ class Collection extends BaseActiveRecord implements CollectionInterface
                 ->andWhere([static::fkFieldId() => $fieldRecord->id])
                 ->andWhere([static::fkCollectionId() => $collectionRecord->id])
                 ->one();
+
+            if (!$valueRecord) 
+            {
+                $valueRecord = new $valueClass([
+                    static::fkFieldId()         => $fieldRecord->id,
+                    static::fkCollectionId()    => $collectionRecord->id,
+                ]);
+                $valueRecord->save();
+            }
 
             $fieldConditions[$valueRecord::primaryKey()[0]] = $valueRecord->id;
             $fieldConditions[static::fkCollectionId()] = $collectionRecord->id;

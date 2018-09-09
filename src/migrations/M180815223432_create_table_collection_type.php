@@ -14,6 +14,7 @@ class M180815223432_create_table_collection_type extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'name' => $this->string(256)->notNull(),
             'handle' => $this->string(256)->notNull(),
+            'mode' => $this->string(64)->notNull(),
         ]);
     }
 

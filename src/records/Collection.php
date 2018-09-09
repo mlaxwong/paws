@@ -2,6 +2,7 @@
 namespace paws\records;
 
 use yii\db\ActiveRecord;
+use Paws;
 use paws\records\CollectionType;
 use paws\records\CollectionValue;
 use paws\behaviors\TimestampBehavior;
@@ -26,6 +27,17 @@ class Collection extends ActiveRecord
             [['collection_type_id'], 'required'],
             [['collection_type_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
+            [['collection_type_id'], function ($attribute, $params, $validator) {
+                $query = self::find()
+                    ->joinWith('collectionType ct')
+                    ->andWhere(['ct.mode' => CollectionType::MODE_SINGLE])
+                    ->andWhere(['collection_type_id' => $this->{$attribute}]);
+                if ($query->exists() && $this->isNewRecord)
+                {
+                    $modes = CollectionType::getModes();
+                    $this->addError($attribute, Paws::t('app', 'Collection Type "{mode}" only can create once.', ['mode' => $modes[CollectionType::MODE_SINGLE]]));
+                }
+            }],
         ];
     }
 

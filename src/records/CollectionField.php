@@ -20,6 +20,11 @@ class CollectionField extends ActiveRecord
         ];  
     }
 
+    public function getTest()
+    {
+        return $this->hasOne(self::class, ['id' => 'id']);
+    }
+
     public function getCollectionTypes()
     {
         return $this->hasMany(CollectionType::class, ['id' => 'collection_type_id'])->viaTable('{{%collection_type_field_map}}', ['collection_field_id' => 'id']);
