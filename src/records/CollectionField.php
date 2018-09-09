@@ -3,6 +3,7 @@ namespace paws\records;
 
 use yii\db\ActiveRecord;
 use paws\records\CollectionType;
+use paws\base\Field;
 
 class CollectionField extends ActiveRecord
 {
@@ -14,15 +15,16 @@ class CollectionField extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'handle'], 'required'],
+            [['name', 'handle', 'config_class'], 'required'],
             [['name', 'handle'], 'string', 'max' => 256],
+            [['config_class'], 'in', 'range' => array_keys($this->getFieldTypes())],
             [['config'], 'safe'],
         ];  
     }
 
-    public function getTest()
+    public function getFieldTypes()
     {
-        return $this->hasOne(self::class, ['id' => 'id']);
+        return Field::getFieldTypes();
     }
 
     public function getCollectionTypes()

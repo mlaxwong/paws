@@ -14,6 +14,7 @@ class M180815223423_create_table_collection_field extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'name' => $this->string(256)->notNull(),
             'handle' => $this->string(256)->notNull(),
+            'config_class' => $this->string(512)->notNull(),
             'config' => $this->text()->defaultValue(null),
         ]);
     }

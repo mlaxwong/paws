@@ -27,7 +27,7 @@ class Collection extends ActiveRecord
             [['collection_type_id'], 'required'],
             [['collection_type_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['collection_type_id'], function ($attribute, $params, $validator) {
+            [['collection_type_id'], function ($attribute) {
                 $query = self::find()
                     ->joinWith('collectionType ct')
                     ->andWhere(['ct.mode' => CollectionType::MODE_SINGLE])
