@@ -12,6 +12,7 @@ require dirname(__DIR__) . '/helpers/env.php';
 // Paths
 defined('PATH_BASE') or define('PATH_BASE', env('PATH_BASE') ?: dirname(__DIR__, 3));
 defined('PATH_VENDOR') or define('PATH_VENDOR', env('PATH_VENDOR') ?: PATH_BASE . DIRECTORY_SEPARATOR . 'vendor');
+defined('PATH_CONFIG') or define('PATH_CONFIG', PATH_BASE . (env('PATH_CONFIG') ?: DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'config'));
 defined('PATH_PAWS_SRC') or define('PATH_PAWS_SRC', env('PATH_PAWS_SRC') ?: PATH_VENDOR . DIRECTORY_SEPARATOR . 'mlaxwong' . DIRECTORY_SEPARATOR . 'paws' . DIRECTORY_SEPARATOR . 'src');
 
 // Environment
@@ -27,9 +28,11 @@ if (ENVIRONMENT !== 'prod' && ENVIRONMENT !== 'dev')
 defined('APP_TYPE') or define('APP_TYPE', 'web');
 
 // Validate app type
-if (APP_TYPE !== 'web' && APP_TYPE !== 'console' && APP_TYPE !== 'test')
+$appTypes = ['web', 'console', 'rest', 'test'];
+if (!in_array(APP_TYPE, $appTypes))
 {
-    throw new \Exception('APP_TYPE must be "web" or "console".');
+    $appTypesString = '"' . implode('" or "', $appTypes) . '"';
+    throw new \Exception('APP_TYPE must be ' . $appTypesString . '.');
 }
 
 // Dev mode
@@ -63,10 +66,9 @@ Paws::setAlias('@paws', PATH_PAWS_SRC);
 Paws::setAlias('@runtime', PATH_BASE . DIRECTORY_SEPARATOR . 'runtime');
 
 // Project config
-$projectConfigPath = PATH_BASE . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'config';
-$projectConfigs = glob($projectConfigPath . DIRECTORY_SEPARATOR . 'app.*.' . APP_TYPE . '.php');
-if (file_exists($projectConfigPath . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php')) array_unshift($projectConfigs, $projectConfigPath . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php');
-if (file_exists($projectConfigPath . DIRECTORY_SEPARATOR . 'app.php')) array_unshift($projectConfigs, $projectConfigPath . DIRECTORY_SEPARATOR . 'app.php');
+$projectConfigs = glob(PATH_CONFIG . DIRECTORY_SEPARATOR . 'app.*.' . APP_TYPE . '.php');
+if (file_exists(PATH_CONFIG . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php')) array_unshift($projectConfigs, PATH_CONFIG . DIRECTORY_SEPARATOR . 'app.' . APP_TYPE . '.php');
+if (file_exists(PATH_CONFIG . DIRECTORY_SEPARATOR . 'app.php')) array_unshift($projectConfigs, PATH_CONFIG . DIRECTORY_SEPARATOR . 'app.php');
 
 // Application config
 $config->appConfigs = \yii\helpers\ArrayHelper::merge([
