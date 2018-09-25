@@ -33,7 +33,7 @@ return [
                 if ($response->isSuccessful) {
                     $response->data['data'] = $data;
                 } else {
-                    $response->data['data'] = in_array($statusCode, [401, 500]) ? [] : $data;
+                    $response->data['data'] = in_array($statusCode, [404, 401, 500]) ? [] : $data;
                     // $response->data['message'] = $data['message'] ?: [];
                     // $response->data['code'] = $data['code'];
                 }
