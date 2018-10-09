@@ -17,7 +17,7 @@ class CollectionField extends ActiveRecord
         return [
             [['name', 'handle', 'config_class'], 'required'],
             [['name', 'handle'], 'string', 'max' => 256],
-            [['config_class'], 'in', 'range' => array_keys($this->getFieldTypes())],
+            // [['config_class'], 'in', 'range' => array_keys($this->getFieldTypes())],
             [['config'], 'safe'],
         ];  
     }
