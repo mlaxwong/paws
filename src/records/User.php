@@ -1,13 +1,21 @@
 <?php
 namespace paws\records;
 
-use Paws;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use Paws;
+use paws\behaviors\TimestampBehavior;
 
 class User extends ActiveRecord implements IdentityInterface
 {
     public $password;
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+        ];
+    }
 
     public static function tableName(): string
     {
