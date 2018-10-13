@@ -20,6 +20,12 @@ class M180913070507_create_table_user extends Migration
             'updated_at' => $this->timestamp()->defaultValue(NULL),
             'logged_at' => $this->timestamp()->defaultValue(NULL),
         ]);
+
+        $this->batchInsert(
+            MigrationHelper::prefix($this->tableName), 
+            ['id', 'username', 'auth_key', 'password_hash', 'email', 'created_at', 'updated_at'],
+            [1, 'developer', 'NrhetzCJL9wRQemdpHT4GL3zyvZmAuTc', '$2y$13$TDBeAM/CC8Xpf7WHvgG4bODk1y9Z0YONhI9lzI6wyA90NSy8BBnju', 'mlaxwong@gmail.com', new \yii\db\Expression('NOW()'), new \yii\db\Expression('NOW()')]
+        );
     }
 
     public function safeDown()
