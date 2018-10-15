@@ -19,7 +19,7 @@ class Config extends Component
         $this->_app = null;
     }
 
-    public function getApp(): array
+    public function getApp()
     {
         if ($this->_app === null)
         {
@@ -34,7 +34,7 @@ class Config extends Component
         return $this->_app;
     }
 
-    public function getGeneral(): stdClass
+    public function getGeneral()
     {
         if ($this->_general === null)
         {
@@ -43,12 +43,12 @@ class Config extends Component
         return $this->_general;
     }
 
-    protected function getGeneralConfigFilePath(): string
+    protected function getGeneralConfigFilePath()
     {
         return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'general.php';
     }
 
-    protected function getConfigFromFile(string $path): array
+    protected function getConfigFromFile($path)
     {
         if (!file_exists($path)) return [];
         

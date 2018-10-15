@@ -10,7 +10,7 @@ class MigrationHelper extends Component
      * @param string $tableName table name
      * @return string
      */
-    public static function prefix($tableName): string
+    public static function prefix($tableName)
     {
         return '{{%' . $tableName . '}}';
     }
@@ -21,7 +21,7 @@ class MigrationHelper extends Component
      * @param string $column column name
      * @return string
      */
-    public static function fk($tableName, $column): string
+    public static function fk($tableName, $column)
     {
         return 'fk_' . $tableName . '_' . $column;
     }

@@ -34,7 +34,7 @@ class Model extends Component
         return null;
     }
 
-    protected function getQuery(string $class): ActiveQuery
+    protected function getQuery(string $class)
     {
         return $class::find();
     }

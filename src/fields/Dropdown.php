@@ -6,7 +6,7 @@ use paws\base\Field;
 
 class Dropdown extends Field
 {
-    public static function displayName(): string
+    public static function displayName()
     {
         return Paws::t('app', 'Dropdown');
     }

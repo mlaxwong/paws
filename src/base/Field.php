@@ -7,7 +7,7 @@ use yii\helpers\StringHelper;
 
 abstract class Field extends Component
 {
-    abstract static function displayName(): string;
+    abstract static function displayName();
 
     abstract function getInputHtml();
 

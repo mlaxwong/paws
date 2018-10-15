@@ -29,7 +29,7 @@ class Record extends Component
         return $recordClass;
     }
 
-    protected function getRecordQuery(string $recordClass): ActiveQuery
+    protected function getRecordQuery(string $recordClass)
     {
         return $recordClass::find();
     }

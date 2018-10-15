@@ -245,7 +245,7 @@ class Collection extends BaseActiveRecord implements CollectionInterface
         return [$baseValues, $fieldValues];
     }
 
-    public function updateValueRecords($collectionRecord, array $values): bool
+    public function updateValueRecords($collectionRecord, array $values)
     {
         $updateStatus = true;
         $fieldClass = static::collectionFieldRecord();

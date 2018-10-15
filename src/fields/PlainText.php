@@ -9,7 +9,7 @@ class PlainText extends Field
     public $minLength = null;
     public $maxLength = null;
 
-    public static function displayName(): string
+    public static function displayName()
     {
         return Paws::t('app', 'Plain Text');
     }
