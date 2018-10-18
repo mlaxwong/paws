@@ -2,7 +2,7 @@
 // Requirement
 
 // Running PHP 7+
-if (PHP_VERSION_ID < 70000) exit('Paws CMS requires PHP 7.0 or later');
+if (PHP_VERSION_ID < 50000) exit('Paws CMS requires PHP 5.0 or later');
 
 // Check for this early because Paws CMS uses it before the requirements checker gets a chance to run.
 if (!extension_loaded('mbstring') || (extension_loaded('mbstring') && ini_get('mbstring.func_overload') != 0)) 
