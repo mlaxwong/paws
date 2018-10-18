@@ -30,6 +30,7 @@ class M180913070507_create_table_user extends Migration
                 'auth_key'      => 'NrhetzCJL9wRQemdpHT4GL3zyvZmAuTc', 
                 'password_hash' => '$2y$13$TDBeAM/CC8Xpf7WHvgG4bODk1y9Z0YONhI9lzI6wyA90NSy8BBnju', 
                 'email'         => 'mlaxwong@gmail.com', 
+                'name'         => 'Mlax Wong', 
                 'created_at'    => new \yii\db\Expression('NOW()'), 
                 'updated_at'    => new \yii\db\Expression('NOW()'),
             ]
