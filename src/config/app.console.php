@@ -1,5 +1,6 @@
 <?php 
 $pathBase = defined('PATH_BASE') ? constant('PATH_BASE') : dirname(__DIR__, 2);
+$migrationPath = defined('PATH_MIGRATION') ? constant('PATH_MIGRATION') : $pathBase . DIRECTORY_SEPARATOR . 'migrations/db';
 return [
     'class' => paws\console\Application::class,
     'controllerNamespace' => 'paws\console\controllers',
@@ -11,7 +12,7 @@ return [
                 "paws\migrations",
             ],
             'migrationPath' => [
-                $pathBase . DIRECTORY_SEPARATOR . 'migrations/db',
+                $migrationPath,
                 '@yii/rbac/migrations/',
             ],
         ],
