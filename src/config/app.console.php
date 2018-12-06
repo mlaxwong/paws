@@ -15,6 +15,7 @@ return [
             'migrationPath' => [
                 $pathDbMigration,
                 '@yii/rbac/migrations/',
+                '@vendor/nterms/yii2-mailqueue/migrations/',
             ],
         ],
         'rbac-migrate' => [
