@@ -2,6 +2,8 @@
 namespace paws\records;
 
 use yii\db\ActiveRecord;
+use yii\db\Expression;
+use Paws;
 use paws\behaviors\TimestampBehavior;
 use paws\behaviors\SerializeBehavior;
 
@@ -16,13 +18,11 @@ class Token extends ActiveRecord
     public function behaviors()
     {
         return [
+            ['class' => TimestampBehavior::class],
             [
-                ['class' => TimestampBehavior::class],
-                [
-                    'class' => SerializeBehavior::class,
-                    'attributes' => ['model_primary_key', 'data'],
-                ],
-            ]
+                'class' => SerializeBehavior::class,
+                'attributes' => ['model_primary_key', 'data'],
+            ],
         ];
     }
 
@@ -34,7 +34,7 @@ class Token extends ActiveRecord
     public function rules()
     {
         return [
-            [['token', 'duration'], 'required'],
+            [['token_key', 'duration'], 'required'],
             [['type', 'token_key'], 'string'],
             [['secret'], 'string', 'length' => self::TOKEN_SECRET_LENGTH],
             [['duration'], 'integer'],
@@ -46,7 +46,7 @@ class Token extends ActiveRecord
     public function beforeSave($insert)
     {
         if (!parent::beforeSave($insert)) return false;
-        $this->expire_at = date('Y-m-d H:i:s', time() + $this->duration);
+        if ($this->duration) $this->expire_at = date('Y-m-d H:i:s', time() + $this->duration);
         return true;
     }
 
@@ -74,7 +74,7 @@ class Token extends ActiveRecord
         $modelClass = get_class($model);
         $modelPrimaryKey = $model->getPrimaryKey(true);
         $secret = Paws::$app->security->generateRandomString(self::TOKEN_SECRET_LENGTH);
-        $tokenKey = $this->generateTokenKey($secret, $data);
+        $tokenKey = self::generateTokenKey($secret, $data);
 
         $token = new self([
             'duration'          => $duration,
@@ -85,6 +85,9 @@ class Token extends ActiveRecord
             'token_key'         => $tokenKey,
             'data'              => $data,
         ]);
+        if (!$token->save()) return false;
+
+        return $token;
     }
 
     public static function claimInstance($model, $type, $tokenKey, $data = [])
@@ -94,17 +97,19 @@ class Token extends ActiveRecord
         return $token->claim($data);
     }
 
-    public static function getInstance($model, $type, $tokenKey)
+    public static function getInstance($model, $type, $tokenKey, $includeExpired = false)
     {
         $modelClass         = get_class($model);
         $modelPrimaryKey    = $model->getPrimaryKey(true);
-        return self::find()
+        $query = self::find()
             ->andWhere([
                 'model_class'       => $modelClass,
                 'model_primary_key' => serialize($modelPrimaryKey),
                 'type'              => $type,
                 'token_key'         => $tokenKey,
-            ])->one();
+            ]);
+        if (!$includeExpired) $query->andWhere(['>=', 'expire_at', new Expression('NOW()')]);
+        return $query->one();
     }
 
     public static function generateTokenKey($secret, $data = [], $algo = self::TOKEN_ALGO)

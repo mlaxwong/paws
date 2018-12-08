@@ -4,6 +4,7 @@ return [
     'name' => 'Paws CMS',
     'basePath' => dirname(__DIR__),
     'runtimePath' => '@runtime',
+    'timeZone' => 'Asia/Kuala_Lumpur',
     // 'controllerNamespace' => 'paws\controllers',
     'components' => [
         'authManager' => [

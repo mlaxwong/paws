@@ -1,5 +1,5 @@
 <?php
-namespace tritiq\behaviors;
+namespace paws\behaviors;
 
 use yii\base\Behavior;
 use yii\db\ActiveRecord;

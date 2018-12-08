@@ -12,9 +12,13 @@ class M181207035652_create_table_token extends Migration
     {
         $this->createTable(MigrationHelper::prefix($this->tableName), [
             'id' => $this->primaryKey()->unsigned(),
+            'model_class' => $this->text()->defaultValue(NULL),
+            'model_primary_key' => $this->text()->defaultValue(NULL),
             'type' => $this->string(64)->defaultValue(NULL),
-            'token_key' => $this->text()->notNull(),
-            'expire_at' => $this->integer()->notNull(),
+            'secret' => $this->text()->defaultValue(NULL),
+            'token_key' => $this->text()->defaultValue(NULL),
+            'data' => $this->text()->defaultValue(NULL),
+            'expire_at' => $this->timestamp()->defaultValue(NULL),
             'created_at' => $this->timestamp()->defaultValue(NULL),
             'updated_at' => $this->timestamp()->defaultValue(NULL),
         ]);
