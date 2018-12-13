@@ -29,7 +29,8 @@
         "yiisoft/yii2": "^2.0.15",
         "voskobovich/yii2-linker-behavior": "^4.1",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
-        "nterms/yii2-mailqueue": "^0.0.14"
+        "nterms/yii2-mailqueue": "^0.0.14",
+        "la-haute-societe/yii2-save-relations-behavior": "^1.7"
     },
     "require-dev": {
         "codeception/codeception": "^2.4",

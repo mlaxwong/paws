@@ -4,8 +4,9 @@ use yii\db\QueryBuilder;
 use yii\db\ActiveRecord;
 use Paws;
 use paws\tests\UnitTester;
+use paws\behaviors\SaveRelationBehavior;
 
-class RelationLinkerBehaviorCest
+class SaveRelationBehaviorCest
 {
     public function _before(UnitTester $I)
     {
@@ -28,8 +29,12 @@ class RelationLinkerBehaviorCest
     // tests
     public function tryToTest(UnitTester $I)
     {
-        $example0 = $this->getGetExample0ActiveRecord();
-        $example0->save();
+        $model1 = $this->getGetExample0ActiveRecord();
+        $model1->name = '112';
+        $model1->child = ['name' => 'tes'];
+        $I->assertTrue($model1->save());
+        $I->assertEquals('112', $model1->name);
+        $I->assertEquals('tes', $model1->child->name);
     }
 
     protected function getTables()
@@ -62,9 +67,38 @@ class RelationLinkerBehaviorCest
     {
         return new class extends ActiveRecord
         {
+            public function behaviors()
+            {
+                return [
+                    'saveRelations' => [
+                        'class' => SaveRelationBehavior::class,
+                        'relations' => ['child'],
+                    ],
+                ];  
+            }
+
             public static function tableName()
             {
                 return '{{%relation_linker_behavior_example_0}}';
+            }
+
+            public function rules()
+            {
+                return [
+                    [['name'], 'required'],
+                    [['name'], 'string', 'max' => 3],
+                    [['example_0_id'], 'integer'],
+                ];
+            }
+
+            public function getChild()
+            {
+                return $this->hasOne(self::class, ['id' => 'example_0_id']);
+            }
+
+            public function formName()
+            {
+                return 'test';
             }
         };
     }
