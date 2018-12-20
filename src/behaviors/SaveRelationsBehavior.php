@@ -44,7 +44,7 @@ class SaveRelationsBehavior extends Behavior
     protected $_relationsScenario = [];
     protected $_relationsExtraColumns = [];
     protected $_relationsCascadeDelete = [];
-    protected $_relationsDefaultValue = [];
+    protected $_relationsDefaultValues = [];
 
     /**
      * @inheritdoc
@@ -369,7 +369,7 @@ class SaveRelationsBehavior extends Behavior
         $p1 = $model->isPrimaryKey(array_keys($relation->link));
         $p2 = $relationModel::isPrimaryKey(array_values($relation->link));
         if ($relationModel->getIsNewRecord() && $p1 && !$p2) {
-            $this->_prepareRelationModelDefaultValue($relationModel);
+            $this->_prepareRelationModelDefaultValue($relationModel, $relationName);
             // Save Has one relation new record
             if ($event->isValid && (count($model->dirtyAttributes) || $model->{$relationName}->isNewRecord)) {
                 Paws::debug('Saving ' . self::prettyRelationName($relationName) . ' relation model', __METHOD__);
@@ -434,7 +434,7 @@ class SaveRelationsBehavior extends Behavior
         $errors = [];
         foreach ($model->{$relationName} as $i => $relationModel) 
         {
-            if ($relationModel->getIsNewRecord()) $this->_prepareRelationModelDefaultValue($relationModel);
+            if ($relationModel->getIsNewRecord()) $this->_prepareRelationModelDefaultValue($relationModel, $relationName);
             $this->validateRelationModel(self::prettyRelationName($relationName, $i), $relationName, $relationModel);
             if ($relationModel->errors) 
             {
@@ -835,8 +835,17 @@ class SaveRelationsBehavior extends Behavior
         return false;
     }
 
-    protected function _prepareRelationModelDefaultValue(&$relationModel)
+    protected function _prepareRelationModelDefaultValue(&$relationModel, $relationName)
     {
-        
+        if (isset($this->_relationsDefaultValues[$relationName]))
+        {
+            foreach ($this->_relationsDefaultValues[$relationName] as $key => $value)
+            {
+                if ($relationModel->hasAttribute($key) && $relationModel->getAttribute($key) === null)
+                {
+                    $relationModel->setAttribute($key, $value);
+                }
+            }
+        }
     }
 }

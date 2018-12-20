@@ -28,19 +28,71 @@ class SaveRelationsBehaviorCest
     }
 
     // tests
-    public function tryToTest(UnitTester $I)
+    public function testCreateByArray(UnitTester $I)
     {
-        $model1 = $this->getGetExample0ActiveRecord();
-        $model1->name = '112';
-        $model1->child = ['name' => 'tes'];
-        $model1->children = [
+        $model = $this->getGetExample0ActiveRecord();
+        $model->name = '112';
+        $model->child = ['name' => 'tes'];
+        $model->children = [
             ['name' => '123'],
             ['name' => '456'],
         ];
-        $I->assertTrue($model1->save());
-        $I->assertEquals('112', $model1->name);
-        $I->assertEquals('tes', $model1->child->name);
-        $I->assertEquals(['123', '456'], ArrayHelper::getColumn($model1->children, 'name'));
+        $I->assertTrue($model->save());
+        $I->assertEquals('112', $model->name);
+        $I->assertEquals('tes', $model->child->name);
+        $I->assertEquals(['123', '456'], ArrayHelper::getColumn($model->children, 'name'));
+    }
+
+    public function testCreateByJson(UnitTester $I)
+    {
+        $model = $this->getGetExample0ActiveRecord();
+        $model->name = '112';
+        $model->child = json_encode(['name' => 'tes']);
+        $model->children = json_encode([
+            ['name' => '123'],
+            ['name' => '456'],
+        ]);
+        $I->assertTrue($model->save());
+        $I->assertEquals('112', $model->name);
+        $I->assertEquals('tes', $model->child->name);
+        $I->assertEquals(['123', '456'], ArrayHelper::getColumn($model->children, 'name'));
+    }
+
+    public function testCreateById(UnitTester $I)
+    {
+        $child1 = $this->getGetExample0ActiveRecord();
+        $child1->name = 'tes';
+        $I->assertTrue($child1->save());
+
+        $child2 = $this->getGetExample0ActiveRecord();
+        $child2->name = '123';
+        $I->assertTrue($child2->save());
+
+        $child3 = $this->getGetExample0ActiveRecord();
+        $child3->name = '456';
+        $I->assertTrue($child3->save());
+
+        $model = $this->getGetExample0ActiveRecord();
+        $model->name = '112';
+        $model->child = $child1->id;
+        $model->children = [$child2->id, $child3->id];
+        $I->assertTrue($model->save());
+        $I->assertEquals('112', $model->name);
+        $I->assertEquals('tes', $model->child->name);
+        $I->assertEquals(['123', '456'], ArrayHelper::getColumn($model->children, 'name'));
+    }
+
+    public function testDefaultValue(UnitTester $I)
+    {
+        $model = $this->getGetExample1ActiveRecord();
+        $model->name = '112';
+        $model->child = ['name' => 'tes'];
+        $model->children = [
+            ['name' => '123'],
+            ['name' => '456'],
+        ];
+        $I->assertTrue($model->save());
+        $I->assertEquals('this is default value', $model->child->description);
     }
 
     protected function getTables()
@@ -48,7 +100,8 @@ class SaveRelationsBehaviorCest
         return [
             '{{%save_relations_behavior_example_0}}' => [
                 'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
-                'name' => 'VARCHAR(255) NULL DEFAULT NULL',
+                'name' => 'VARCHAR(256) NULL DEFAULT NULL',
+                'description' => 'VARCHAR(516) NULL DEFAULT NULL',
                 'example_0_id' => 'int(10) unsigned NULL DEFAULT NULL',
                 'PRIMARY KEY (`id`)',
             ],
@@ -96,6 +149,64 @@ class SaveRelationsBehaviorCest
             {
                 return [
                     [['name'], 'required'],
+                    [['name'], 'string', 'max' => 3],
+                    [['example_0_id'], 'integer'],
+                ];
+            }
+
+            public function getChild()
+            {
+                return $this->hasOne(self::class, ['id' => 'example_0_id']);
+            }
+
+
+            public function getChildren()
+            {
+                return $this->hasMany(self::class, ['id' => 'example_0_child_id'])->viaTable('{{%save_relations_behavior_example_0_map}}', ['example_0_parent_id' => 'id']);
+            }
+
+            public function formName()
+            {
+                return 'test';
+            }
+        };
+    }
+
+    protected function getGetExample1ActiveRecord()
+    {
+        return new class extends ActiveRecord
+        {
+            public function behaviors()
+            {
+                return [
+                    'saveRelations' => [
+                        'class' => SaveRelationsBehavior::class,
+                        'relations' => [
+                            'child' => [
+                                'defaultValues' => [
+                                    'description' => 'this is default value',  
+                                ],
+                            ], 
+                            'children' => [
+                                'defaultValues' => [
+                                    'description' => 'this is default value',  
+                                ],
+                            ],
+                        ],
+                    ],
+                ];  
+            }
+
+            public static function tableName()
+            {
+                return '{{%save_relations_behavior_example_0}}';
+            }
+
+            public function rules()
+            {
+                return [
+                    [['name'], 'required'],
+                    [['description'], 'string'],
                     [['name'], 'string', 'max' => 3],
                     [['example_0_id'], 'integer'],
                 ];
