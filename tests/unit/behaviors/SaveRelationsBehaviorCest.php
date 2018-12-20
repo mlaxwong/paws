@@ -86,7 +86,7 @@ class SaveRelationsBehaviorCest
     {
         $model = $this->getGetExample1ActiveRecord();
         $model->name = '112';
-        $model->child = ['name' => 'tes'];
+        $model->child = json_encode(['name' => 'tes']);
         $model->children = [
             ['name' => '123'],
             ['name' => '456'],

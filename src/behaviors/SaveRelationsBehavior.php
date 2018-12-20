@@ -119,7 +119,7 @@ class SaveRelationsBehavior extends Behavior
     public function __set($name, $value)
     {
         // parse json
-        if (in_array($name, $this->relations) && Json::isJson($value)) $value = Json::decode($value);
+        if (in_array($name, $this->_relations) && Json::isJson($value)) $value = Json::decode($value);
 
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;
