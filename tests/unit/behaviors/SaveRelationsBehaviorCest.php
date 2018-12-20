@@ -92,7 +92,7 @@ class SaveRelationsBehaviorCest
             ['name' => '456'],
         ];
         $I->assertTrue($model->save());
-        $I->assertEquals('this is default value', $model->child->description);
+        foreach ($model->children as $child) $I->assertEquals('this is default value', $child->description);
     }
 
     protected function getTables()
