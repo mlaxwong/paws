@@ -139,6 +139,18 @@ class SaveRelationsBehavior extends Behavior
                 }
             }
             if ($relation->multiple === true) {
+                if (is_array($value))
+                {
+                    $keys = array_keys($value);
+                    foreach ($keys as $key)
+                    {
+                        if (!is_numeric($key))
+                        {
+                            $value = [$value];
+                            break;
+                        }
+                    }
+                }
                 $this->setMultipleRelation($name, $value);
             } else {
                 $this->setSingleRelation($name, $value);
