@@ -23,7 +23,7 @@ class CollectionType extends ActiveRecord
         ];
     }
 
-    public static function tableName(): string
+    public static function tableName()
     {
         return '{{%collection_type}}';
     }

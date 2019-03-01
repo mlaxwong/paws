@@ -7,7 +7,7 @@ use paws\records\Collection;
 
 class CollectionValue extends ActiveRecord
 {
-    public static function tableName(): string
+    public static function tableName()
     {
         return '{{%collection_value}}';
     }
