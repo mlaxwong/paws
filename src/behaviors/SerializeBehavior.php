@@ -77,7 +77,7 @@ class SerializeBehavior extends Behavior
 	
     protected function phpDecode($value) 
     {
-		return unserialize($value);
+		return @unserialize($value);
 	}
 	
     protected function jsonEncode($value) 
